@@ -105,7 +105,7 @@ public class MyanmarParser
       i++;
     }
     if (i + 1 == text.length()) breakType = BK_EOL;
-    return new ClusterProperties(offset, i, breakType);
+    return new ClusterProperties(offset, i + 1, breakType);
   }
 
 /**
@@ -166,7 +166,7 @@ public class MyanmarParser
       i++;
     }
     if (i + 1 == text.length) breakType = BK_EOL;
-    return new ClusterProperties(offset, i, breakType);
+    return new ClusterProperties(offset, i + 1, breakType);
   }
     
   
@@ -187,7 +187,7 @@ public class MyanmarParser
     do 
     {
       cp = getNextSyllable(text, i);
-      i = cp.getEnd() + 1;
+      i = cp.getEnd();
     } while (!isLineBreak(cp.getBreakStatus()) && i < text.length());
     return new ClusterProperties(offset, cp.getEnd(), cp.getBreakStatus());
   }
@@ -360,7 +360,7 @@ public class MyanmarParser
       {
         // ci vi ev lv uv av an ld vg md se vs pl pv sp lq rq nj wj ot 
     /*ci*/{ 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 0, 4, 0, 1 },
-    /*vi*/{ 5, 0, 4, 0, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 1, 2, 0, 0, 0, 1 },
+    /*vi*/{ 0, 0, 4, 0, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 1, 2, 0, 0, 0, 1 },
     /*ev*/{ 3, 4, 4, 0, 0, 0, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 0, 4, 0, 1 },
     /*lv*/{ 3, 4, 4, 4, 0, 0, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 0, 4, 0, 1 },
     /*uv*/{ 3, 4, 4, 4, 4, 0, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 0, 4, 0, 1 },
@@ -376,7 +376,7 @@ public class MyanmarParser
     /*sp*/{ 6, 4, 4, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 0, 4, 0, 6 },
     /*lq*/{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 4, 0, 0 },
     /*rq*/{ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 0, 4, 0, 1 },
-    /*nj*/{ 2, 0, 4, 0, 4, 4, 4, 0, 0, 1, 6, 0, 2, 4, 1, 2, 0, 4, 0, 1 },
+    /*nj*/{ 2, 0, 4, 0, 4, 4, 4, 0, 0, 1, 6, 5, 2, 4, 1, 2, 0, 4, 0, 1 },
     /*wj*/{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 4, 0, 0 },
     /*ct*/{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0 }
       };
@@ -602,7 +602,7 @@ public class MyanmarParser
     }
     public int getStart() { return startIndex; }
     public int getEnd() { return endIndex; }
-    public int length() { return endIndex - startIndex + 1; }
+    public int length() { return endIndex - startIndex; }
     public int getBreakStatus() { return breakStatus; }
     public String toString() 
     {
