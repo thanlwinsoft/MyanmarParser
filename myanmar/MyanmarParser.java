@@ -1,3 +1,13 @@
+/**
+ * Title: MyanmarParser
+ * Description: Syllable based Myanmar Parser
+ * Copyright:   Copyright (c) 2005
+ * Company:
+ *
+ * @author Keith Stribley
+ * @version 0.1
+ *
+ */
 
 package myanmar;
 
@@ -5,6 +15,8 @@ import java.util.ArrayList;
 
 public class MyanmarParser
 {
+// Myanmar Constants
+  public final static int MAX_CONTEXT_LENGTH = 4;
 // character classes
   protected final static int MMC_UNKNOWN = 0;
   protected final static int MMC_CI = 1;
@@ -352,7 +364,7 @@ public class MyanmarParser
     }
   }
 
-  protected int getBreakStatus(char before, char after)
+  protected static int getBreakStatus(char before, char after)
   {
     // BK_NO_BREAK = 0; BK_WEIGHT_1 = 1; BK_WEIGHT_2 = 2; BK_CONTEXT = 3; 
     // BK_UNEXPECTED = 4; BK_SYLLABLE = 5; BK_WHITESPACE = 6; BK_EOL = 7;
@@ -378,7 +390,7 @@ public class MyanmarParser
     /*rq*/{ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 0, 4, 0, 1 },
     /*nj*/{ 2, 0, 4, 0, 4, 4, 4, 0, 0, 1, 6, 5, 2, 4, 1, 2, 0, 4, 0, 1 },
     /*wj*/{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 4, 0, 0 },
-    /*ct*/{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0 }
+    /*ot*/{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0 }
       };
       // nj,vi = 0  e.g. husband 
       // nj,lv = 2 e.g. abbreviation of male I
@@ -576,7 +588,7 @@ public class MyanmarParser
    * @param c character to test
    * @return true if character may occur in myanmar text
    */
-  public boolean isNeutralCharacter(char c)
+  public static boolean isNeutralCharacter(char c)
   {
     switch (getCharClass(c))
     {
@@ -592,7 +604,7 @@ public class MyanmarParser
   public class ClusterProperties
   {
     int startIndex;
-    int endIndex; // last index in cluster
+    int endIndex; // one after last index in cluster
     int breakStatus;
     protected ClusterProperties(int start, int end, int breakStatus)
     {
