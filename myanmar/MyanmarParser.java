@@ -296,10 +296,6 @@ public class MyanmarParser
         else text[i] = ' ';
       }
     }
-    int beforeClass = getCharClass(text[0]);
-    int after0Class = getCharClass(text[1]);
-    int after1Class = getCharClass(text[2]);
-    int after2Class = getCharClass(text[3]);
     // deal with easy cases first
     if (text[0] == 0x1021) return BK_NO_BREAK;
     
@@ -401,7 +397,7 @@ public class MyanmarParser
       return BKSTATUS[getCharClass(before) - 1][getCharClass(after) - 1];
   }  
 
-  protected int getCharClass(char mmChar)
+  protected static int getCharClass(char mmChar)
   {
     int mmClass = MMC_UNKNOWN;
     switch (mmChar)
