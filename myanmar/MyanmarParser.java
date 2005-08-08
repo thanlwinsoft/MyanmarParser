@@ -1,18 +1,39 @@
-/**
+/*
  * Title: MyanmarParser
  * Description: Syllable based Myanmar Parser
- * Copyright:   Copyright (c) 2005
- * Company:
+ * Copyright:   Copyright (c) 2005 http://www.thanlwinsoft.org
  *
  * @author Keith Stribley
  * @version 0.1
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
  *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this program; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA  02111-1307  USA
  */
 
-package myanmar;
+package org.thanlwinsoft.myanmar;
 
 import java.util.ArrayList;
 
+/**
+* A class to parse Myanamar Text for line break points. 
+* It can also be used to check for erroneous code sequences of
+* for Tokenizing, since space based tokenizing gives bad results
+* with Myanmar.
+* It implements the algorithm described at:
+* http://www.thanlwinsoft.org/ThanLwinSoft/MyanmarUnicode/Parsing/
+*/
 public class MyanmarParser
 {
 // Myanmar Constants
@@ -273,6 +294,11 @@ public class MyanmarParser
     //return (ClusterProperties[])errorClusters.toArray();
   }
   
+  /** A simple method to determine whether the break status allows a line
+  * break. If the breakStatus is weight 1 or 2 a line break will be allowed.
+  * @param breakStatus
+  * @return true if a line break is permissible
+  */
   public boolean isLineBreak(int breakStatus)
   {
     boolean lineBreak = false;
@@ -280,7 +306,12 @@ public class MyanmarParser
       lineBreak = true;
     return lineBreak;
   }                     
-                        
+  /**
+  * evaluates the context where a simple pair approach is not enough
+  * @param contextText
+  * @param offset
+  * @return break status of specified offset in text
+  */                      
   protected int evaluateContext(String contextText, int offset)
   {
     char [] text;
@@ -359,7 +390,12 @@ public class MyanmarParser
       return BK_WEIGHT_2;
     }
   }
-
+  /**
+  * gets the break status of a pair of characters
+  * @param before
+  * @param after
+  * @return break status code
+  */
   protected static int getBreakStatus(char before, char after)
   {
     // BK_NO_BREAK = 0; BK_WEIGHT_1 = 1; BK_WEIGHT_2 = 2; BK_CONTEXT = 3; 
@@ -396,7 +432,11 @@ public class MyanmarParser
       // in burmese the only valid use of nj is after virama
       return BKSTATUS[getCharClass(before) - 1][getCharClass(after) - 1];
   }  
-
+  /**
+  * gets the character status of teh given character
+  * @param character
+  * @return class
+  */
   protected static int getCharClass(char mmChar)
   {
     int mmClass = MMC_UNKNOWN;
@@ -596,11 +636,13 @@ public class MyanmarParser
     }
     return false;
   }
-  
+  /**
+  * A class to hold properties of a cluster
+  */
   public class ClusterProperties
   {
     int startIndex;
-    int endIndex; // one after last index in cluster
+    int endIndex; //< one after last index in cluster
     int breakStatus;
     protected ClusterProperties(int start, int end, int breakStatus)
     {
