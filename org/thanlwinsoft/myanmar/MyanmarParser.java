@@ -403,26 +403,26 @@ public class MyanmarParser
     final int [][] BKSTATUS = 
       {
         // ci vi ev lv uv av an ld vg md se vs pl pv sp lq rq nj wj ot 
-    /*ci*/{ 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 0, 4, 0, 1 },
-    /*vi*/{ 0, 0, 4, 0, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 1, 2, 0, 0, 0, 1 },
-    /*ev*/{ 3, 4, 4, 0, 0, 0, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 0, 4, 0, 1 },
-    /*lv*/{ 3, 4, 4, 4, 0, 0, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 0, 4, 0, 1 },
-    /*uv*/{ 3, 4, 4, 4, 4, 0, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 0, 4, 0, 1 },
-    /*av*/{ 3, 0, 4, 4, 4, 4, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 0, 4, 0, 1 },
-    /*an*/{ 2, 4, 4, 4, 4, 4, 4, 0, 0, 1, 6, 5, 2, 4, 1, 2, 0, 4, 0, 1 },
-    /*ld*/{ 2, 4, 4, 4, 4, 4, 4, 4, 0, 1, 6, 5, 2, 4, 1, 2, 0, 4, 0, 1 },
-    /*vg*/{ 2, 4, 4, 4, 4, 4, 4, 4, 4, 1, 6, 5, 2, 4, 1, 2, 0, 4, 0, 1 },
-    /*md*/{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 2, 0, 4, 0, 1 },
-    /*se*/{ 1, 4, 4, 4, 4, 4, 4, 4, 4, 1, 4, 1, 1, 4, 1, 2, 0, 4, 0, 1 },
-    /*vs*/{ 1, 4, 4, 4, 4, 4, 4, 0, 4, 1, 6, 5, 1, 4, 1, 2, 0, 4, 0, 1 },
-    /*pl*/{ 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6, 5, 2, 0, 1, 2, 0, 4, 0, 1 },
-    /*pv*/{ 2, 4, 0, 0, 0, 0, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 0, 4, 0, 1 },
-    /*sp*/{ 6, 4, 4, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 0, 4, 0, 6 },
-    /*lq*/{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 4, 0, 0 },
-    /*rq*/{ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 0, 4, 0, 1 },
-    /*nj*/{ 2, 0, 4, 0, 4, 4, 4, 0, 0, 1, 6, 5, 2, 4, 1, 2, 0, 4, 0, 1 },
-    /*wj*/{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 4, 0, 0 },
-    /*ot*/{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0 }
+    /*ci*/{ 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
+    /*vi*/{ 0, 0, 4, 0, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 1, 2, 5, 0, 0, 1 },
+    /*ev*/{ 3, 4, 4, 0, 0, 0, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
+    /*lv*/{ 3, 4, 4, 4, 0, 0, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
+    /*uv*/{ 3, 4, 4, 4, 4, 0, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
+    /*av*/{ 3, 0, 4, 4, 4, 4, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
+    /*an*/{ 2, 4, 4, 4, 4, 4, 4, 0, 0, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
+    /*ld*/{ 2, 4, 4, 4, 4, 4, 4, 4, 0, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
+    /*vg*/{ 2, 4, 4, 4, 4, 4, 4, 4, 4, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
+    /*md*/{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 2, 5, 4, 0, 1 },
+    /*se*/{ 1, 4, 4, 4, 4, 4, 4, 4, 4, 1, 4, 1, 1, 4, 1, 2, 5, 4, 0, 1 },
+    /*vs*/{ 1, 4, 4, 4, 4, 4, 4, 0, 4, 1, 6, 5, 1, 4, 1, 2, 5, 4, 0, 1 },
+    /*pl*/{ 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6, 5, 2, 0, 1, 2, 5, 4, 0, 1 },
+    /*pv*/{ 2, 4, 0, 0, 0, 0, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
+    /*sp*/{ 6, 4, 4, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 5, 4, 0, 6 },
+    /*lq*/{ 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 0, 5, 4, 5, 5 },
+    /*rq*/{ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 5, 4, 0, 1 },
+    /*nj*/{ 2, 0, 4, 0, 4, 4, 4, 0, 0, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
+    /*wj*/{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 5, 4, 0, 0 },
+    /*ot*/{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 0, 0, 0 }
       };
       // nj,vi = 0  e.g. husband 
       // nj,lv = 2 e.g. abbreviation of male I
@@ -488,34 +488,34 @@ public class MyanmarParser
       case 0x104e:
       case 0x25cc:
       //case 0x002d: // not sure about -
-        mmClass = MMC_CI;
+        mmClass = MMC_CI; // consonants
         break;
       case 0x1039:
-        mmClass = MMC_VI;
+        mmClass = MMC_VI; // virama
         break;
       case 0x1031:
-        mmClass = MMC_EV;
+        mmClass = MMC_EV; // e vowel (thwetoo)
         break;
       case 0x102f:
       case 0x1030:
-        mmClass = MMC_LV;
+        mmClass = MMC_LV; // lower vowel 
         break;
       case 0x102d:
       case 0x102e:
       case 0x1032:
-        mmClass = MMC_UV;
+        mmClass = MMC_UV; // upper vowel
         break;
       case 0x102c:
-        mmClass = MMC_AV;
+        mmClass = MMC_AV; // a vowel / yecha
         break;
       case 0x1036:
-        mmClass = MMC_AN;
+        mmClass = MMC_AN; // upper dot
         break;    
       case 0x1037:
-        mmClass = MMC_LD;
+        mmClass = MMC_LD; // lower dot (aukumit)
         break;
       case 0x1038:
-        mmClass = MMC_VG;
+        mmClass = MMC_VG; // visarga / wisanalonpa
         break;
       case 0x1040:
       case 0x1041:
@@ -527,7 +527,7 @@ public class MyanmarParser
       case 0x1047:
       case 0x1048:
       case 0x1049:
-        mmClass = MMC_MD;
+        mmClass = MMC_MD; // myanmar digit
         break;
       case 0x104a:
       case 0x104b:
@@ -535,12 +535,12 @@ public class MyanmarParser
       case 0x002e:
       case 0x003a:
       case 0x003b:
-        mmClass = MMC_SE;
+        mmClass = MMC_SE; // section
         break;  
       case 0x104c:
       case 0x104d:
       case 0x104f:
-        mmClass = MMC_VS;
+        mmClass = MMC_VS; // various signs
         break;  
       case 0x1050:
       case 0x1051:
@@ -548,18 +548,18 @@ public class MyanmarParser
       case 0x1053:
       case 0x1054:
       case 0x1055:
-        mmClass = MMC_PL;
+        mmClass = MMC_PL; // Sanskrit letters
         break;
       case 0x1056:
       case 0x1057:
       case 0x1058:
       case 0x1059:
-        mmClass = MMC_PV;
+        mmClass = MMC_PV; // Sanskrit vowels
         break;
       case 0x0020:
       case 0x2000:
       case 0x200B:
-        mmClass = MMC_SP;
+        mmClass = MMC_SP; // Space
         break;
       case 0x0028:
       case 0x005b:
@@ -568,7 +568,7 @@ public class MyanmarParser
       case 0x2018:
       case 0x201c:
       case 0x2039:
-        mmClass = MMC_LQ;
+        mmClass = MMC_LQ; // left quote/bracket
         break;
       case 0x0029:
       case 0x005d:
@@ -577,18 +577,34 @@ public class MyanmarParser
       case 0x2019:
       case 0x201d:
       case 0x203a:
-        mmClass = MMC_RQ;
+        mmClass = MMC_RQ; // right quote / bracket
         break;
       case 0x200c:
-        mmClass = MMC_NJ;
+        mmClass = MMC_NJ; // ZWNJ
         break;
       case 0x200d:
       case 0x2060:
-        mmClass = MMC_WJ;
+        mmClass = MMC_WJ; // Word joiner
         break;
       default:
         if (Character.isWhitespace(mmChar))
           mmClass = MMC_SP;
+		else if (Character.getType(mmChar) == Character.START_PUNCTUATION ||
+				 Character.getType(mmChar) == Character.INITIAL_QUOTE_PUNCTUATION)
+		{
+			mmClass = MMC_LQ;
+		}
+		else if (Character.getType(mmChar) == Character.END_PUNCTUATION ||
+				 Character.getType(mmChar) == Character.FINAL_QUOTE_PUNCTUATION)
+		{
+			mmClass = MMC_RQ;
+		}
+        else if (Character.getType(mmChar) == Character.OTHER_PUNCTUATION ||
+                 Character.getType(mmChar) == Character.DASH_PUNCTUATION || 
+                 Character.getType(mmChar) == Character.MODIFIER_SYMBOL)
+		{
+			mmClass = MMC_VS;
+		}
         else
           mmClass = MMC_OT;
     }
