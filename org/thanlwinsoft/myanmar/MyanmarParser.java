@@ -418,7 +418,7 @@ public class MyanmarParser
     /*pl*/{ 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6, 5, 2, 0, 1, 2, 5, 4, 0, 1 },
     /*pv*/{ 2, 4, 0, 0, 0, 0, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
     /*sp*/{ 6, 4, 4, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 5, 4, 0, 6 },
-    /*lq*/{ 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 0, 5, 4, 5, 5 },
+    /*lq*/{ 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 5, 5, 4, 5, 5 },
     /*rq*/{ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 5, 4, 0, 1 },
     /*nj*/{ 2, 0, 4, 0, 4, 4, 4, 0, 0, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
     /*wj*/{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 5, 4, 0, 0 },
@@ -587,28 +587,37 @@ public class MyanmarParser
         mmClass = MMC_WJ; // Word joiner
         break;
       default:
-        if (Character.isWhitespace(mmChar))
+        int charType = Character.getType(mmChar);
+        if (Character.isWhitespace(mmChar) 
+            || charType == Character.DASH_PUNCTUATION 
+            || charType == Character.START_PUNCTUATION 
+            || charType == Character.END_PUNCTUATION 
+            || charType == Character.OTHER_PUNCTUATION 
+            || charType == Character.DASH_PUNCTUATION 
+            || charType == Character.DASH_PUNCTUATION 
+            || charType == Character.DASH_PUNCTUATION 
+            )
           mmClass = MMC_SP;
-		else if (Character.getType(mmChar) == Character.START_PUNCTUATION ||
-				 Character.getType(mmChar) == Character.INITIAL_QUOTE_PUNCTUATION)
-		{
-			mmClass = MMC_LQ;
-		}
-		else if (Character.getType(mmChar) == Character.END_PUNCTUATION ||
-				 Character.getType(mmChar) == Character.FINAL_QUOTE_PUNCTUATION)
-		{
-			mmClass = MMC_RQ;
-		}
+        else if (Character.getType(mmChar) == Character.START_PUNCTUATION ||
+                 Character.getType(mmChar) == Character.INITIAL_QUOTE_PUNCTUATION)
+        {
+          mmClass = MMC_LQ;
+        }
+        else if (Character.getType(mmChar) == Character.END_PUNCTUATION ||
+                 Character.getType(mmChar) == Character.FINAL_QUOTE_PUNCTUATION)
+        {
+          mmClass = MMC_RQ;
+        }
         else if (Character.getType(mmChar) == Character.OTHER_PUNCTUATION ||
                  Character.getType(mmChar) == Character.DASH_PUNCTUATION || 
                  Character.getType(mmChar) == Character.MODIFIER_SYMBOL)
-		{
-			mmClass = MMC_VS;
-		}
+        {
+          mmClass = MMC_VS;
+        }
         else
           mmClass = MMC_OT;
     }
-    
+
     //System.out.println("Char " + Integer.toHexString(mmChar) + " " + mmClass + 
     //                   " " + mmChar);
     return mmClass;
