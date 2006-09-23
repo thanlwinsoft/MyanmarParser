@@ -37,29 +37,31 @@ import java.util.ArrayList;
 public class MyanmarParser
 {
 // Myanmar Constants
-  public final static int MAX_CONTEXT_LENGTH = 4;
+  public final static int MAX_CONTEXT_LENGTH = 3;
 // character classes
   protected final static int MMC_UNKNOWN = 0;
   protected final static int MMC_CI = 1;
-  protected final static int MMC_VI = 2;
-  protected final static int MMC_EV = 3;
-  protected final static int MMC_LV = 4;
+  protected final static int MMC_ME = 2;
+  protected final static int MMC_VI = 3;
+  protected final static int MMC_EV = 4;
   protected final static int MMC_UV = 5;
-  protected final static int MMC_AV = 6;
-  protected final static int MMC_AN = 7;
-  protected final static int MMC_LD = 8;
-  protected final static int MMC_VG = 9;
-  protected final static int MMC_MD = 10;
-  protected final static int MMC_SE = 11;
-  protected final static int MMC_VS = 12;
-  protected final static int MMC_PL = 13;
-  protected final static int MMC_PV = 14;
-  protected final static int MMC_SP = 15;
-  protected final static int MMC_LQ = 16;
-  protected final static int MMC_RQ = 17;
-  protected final static int MMC_NJ = 18;
-  protected final static int MMC_WJ = 19;
-  protected final static int MMC_OT = 20;
+  protected final static int MMC_LV = 6;
+  protected final static int MMC_AV = 7;
+  protected final static int MMC_AN = 8;
+  protected final static int MMC_KI = 9;
+  protected final static int MMC_LD = 10;
+  protected final static int MMC_VG = 11;
+  protected final static int MMC_MD = 12;
+  protected final static int MMC_SE = 13;
+  protected final static int MMC_VS = 14;
+  protected final static int MMC_PL = 15;
+  protected final static int MMC_PV = 16;
+  protected final static int MMC_SP = 17;
+  protected final static int MMC_LQ = 18;
+  protected final static int MMC_RQ = 19;
+  //protected final static int MMC_NJ = 18;
+  protected final static int MMC_WJ = 20;
+  protected final static int MMC_OT = 21;
 // break weights from intitial table approach
   public final static int BK_NO_BREAK = 0;
   public final static int BK_WEIGHT_1 = 1;
@@ -100,25 +102,9 @@ public class MyanmarParser
       switch (breakStatus)
       {
         case BK_NO_BREAK:
+        case BK_STACK_SYLLABLE:
           break;
         case BK_SYLLABLE:
-        case BK_STACK_SYLLABLE:
-          // this is wrong if its a medial
-          if (text.charAt(i) == 0x1039)
-          {
-            switch (text.charAt(i+1))
-            {
-              case 0x101a:
-              case 0x101b:
-              case 0x101d:
-              case 0x101f:
-                break;
-              default:
-                breakType = breakStatus;
-                foundCluster = true;
-            }
-            break;
-          }
         case BK_WEIGHT_1:
         case BK_WEIGHT_2:
         case BK_UNEXPECTED:
@@ -161,25 +147,9 @@ public class MyanmarParser
       switch (breakStatus)
       {
         case BK_NO_BREAK:
+        case BK_STACK_SYLLABLE:
           break;
         case BK_SYLLABLE:
-        case BK_STACK_SYLLABLE:
-          // this is wrong if its a medial
-          if (text[i] == 0x1039)
-          {
-            switch (text[i+1])
-            {
-              case 0x101a:
-              case 0x101b:
-              case 0x101d:
-              case 0x101f:
-                break;
-              default:
-                breakType = breakStatus;
-                foundCluster = true;
-            }
-            break;
-          }
         case BK_WEIGHT_1:
         case BK_WEIGHT_2:
         case BK_UNEXPECTED:
@@ -214,10 +184,9 @@ public class MyanmarParser
   public ClusterProperties getNextLineBreak(String text, int offset)
   {
     int i = offset;
-    int status = BK_NO_BREAK;
     ClusterProperties cp = null;
     if (offset >= text.length()) return null;
-    do 
+    do
     {
       cp = getNextSyllable(text, i);
       i = cp.getEnd();
@@ -234,7 +203,6 @@ public class MyanmarParser
   public boolean isValidMyanmar(String text, int offset)
   {
     int i = offset;
-    int status = BK_NO_BREAK;
     ClusterProperties cp = null;
     boolean valid = true;
     if (offset >= text.length()) return valid;
@@ -260,7 +228,6 @@ public class MyanmarParser
   public ClusterProperties [] checkMyanmar(String text, int offset)
   {
     int i = offset;
-    int status = BK_NO_BREAK;
     ClusterProperties cp = null;
     
     // if you are using Java version < 1.5 change to the commented out
@@ -332,58 +299,13 @@ public class MyanmarParser
     
     if (text[1] == 0x002d) return BK_NO_BREAK;
     
-    if (text[1] == 0x1004) // nga
+    if (text[2] == 0x1039)
     {
-      // check for Kinzi
-      // but there must never be a line break here
-      if (text[2] == 0x1039) 
-      {
-        return BK_NO_BREAK;
-      }
-      else return BK_WEIGHT_2;
+      return BK_NO_BREAK;
     }
-    else if (text[2] == 0x1039)
+    else if (text[2] == 0x103A)
     {
-      switch (text[3])
-      {
-      case 0x200C: // visible virama
-          return BK_NO_BREAK;
-      // stacked consonants
-      case 0x1000:
-      case 0x1001:
-      case 0x1002:
-      case 0x1003:
-      //case 0x1004: 
-      case 0x1005:
-      case 0x1006:
-      case 0x1007:
-      case 0x1008:
-      case 0x1009:
-      case 0x100a:
-      case 0x100b:
-      case 0x100c:
-      case 0x100d:
-      case 0x100e:
-      case 0x100f:
-      case 0x1010:
-      case 0x1011:
-      case 0x1012:
-      case 0x1013:
-      case 0x1014:
-      case 0x1015:
-      case 0x1016:
-      case 0x1017:
-      case 0x1018:
-      case 0x1019:
-      case 0x101c:
-      case 0x101e:
-      case 0x1020:
-      case 0x1021:
-          return BK_NO_BREAK;
-          //return BK_STACK_SYLLABLE;
-      default:
-          return BK_WEIGHT_2;
-      }
+      return BK_NO_BREAK;
     }
     else
     {
@@ -402,27 +324,28 @@ public class MyanmarParser
     // BK_UNEXPECTED = 4; BK_SYLLABLE = 5; BK_WHITESPACE = 6; BK_EOL = 7;
     final int [][] BKSTATUS = 
       {
-        // ci vi ev lv uv av an ld vg md se vs pl pv sp lq rq nj wj ot 
-    /*ci*/{ 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
-    /*vi*/{ 0, 0, 4, 0, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 1, 2, 5, 0, 0, 1 },
-    /*ev*/{ 3, 4, 4, 0, 0, 0, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
-    /*lv*/{ 3, 4, 4, 4, 0, 0, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
-    /*uv*/{ 3, 4, 4, 4, 4, 0, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
-    /*av*/{ 3, 0, 4, 4, 4, 4, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
-    /*an*/{ 2, 4, 4, 4, 4, 4, 4, 0, 0, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
-    /*ld*/{ 2, 4, 4, 4, 4, 4, 4, 4, 0, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
-    /*vg*/{ 2, 4, 4, 4, 4, 4, 4, 4, 4, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
-    /*md*/{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 2, 5, 4, 0, 1 },
-    /*se*/{ 1, 4, 4, 4, 4, 4, 4, 4, 4, 1, 4, 1, 1, 4, 1, 2, 5, 4, 0, 1 },
-    /*vs*/{ 1, 4, 4, 4, 4, 4, 4, 0, 4, 1, 6, 5, 1, 4, 1, 2, 5, 4, 0, 1 },
-    /*pl*/{ 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6, 5, 2, 0, 1, 2, 5, 4, 0, 1 },
-    /*pv*/{ 2, 4, 0, 0, 0, 0, 0, 0, 0, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
-    /*sp*/{ 6, 4, 4, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 5, 4, 0, 6 },
-    /*lq*/{ 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 5, 5, 4, 5, 5 },
-    /*rq*/{ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 5, 4, 0, 1 },
-    /*nj*/{ 2, 0, 4, 0, 4, 4, 4, 0, 0, 1, 6, 5, 2, 4, 1, 2, 5, 4, 0, 1 },
-    /*wj*/{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 5, 4, 0, 0 },
-    /*ot*/{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 0, 0, 0 }
+        // ci me vi ev uv lv av an ki ld vg md se vs pl pv sp lq rq wj ot 
+    /*ci*/{ 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
+    /*me*/{ 3, 0, 4, 0, 0, 0, 0, 0, 4, 4, 4, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
+    /*vi*/{ 0, 4, 0, 4, 0, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 1, 2, 5, 0, 1 },
+    /*ev*/{ 3, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
+    /*uv*/{ 3, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
+    /*lv*/{ 3, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
+    /*av*/{ 3, 4, 0, 4, 4, 4, 4, 0, 0, 0, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
+    /*an*/{ 2, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
+    /*ki*/{ 2, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
+    /*ld*/{ 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
+    /*vg*/{ 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
+    /*md*/{ 1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 2, 5, 0, 1 },
+    /*se*/{ 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 4, 1, 1, 4, 1, 2, 5, 0, 1 },
+    /*vs*/{ 1, 4, 4, 4, 4, 4, 4, 4, 4, 0, 4, 1, 5, 5, 1, 4, 1, 2, 5, 0, 1 },
+    /*pl*/{ 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 5, 2, 0, 1, 2, 5, 0, 1 },
+    /*pv*/{ 2, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
+    /*sp*/{ 6, 6, 4, 4, 4, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 5, 0, 6 },
+    /*lq*/{ 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 5, 5, 5, 5 },
+    /*rq*/{ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 5, 0, 1 },
+    /*wj*/{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 5, 0, 0 },
+    /*ot*/{ 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 0, 0 }
       };
       // nj,vi = 0  e.g. husband 
       // nj,lv = 2 e.g. abbreviation of male I
@@ -487,12 +410,22 @@ public class MyanmarParser
       case 0x102a:
       case 0x104e:
       case 0x25cc:
+      case 0x103f: // tha kyi is almost like a consonant
       //case 0x002d: // not sure about -
         mmClass = MMC_CI; // consonants
         break;
+      case 0x103b:
+      case 0x103c:
+      case 0x103d:
+      case 0x103e:
+    	  mmClass = MMC_ME; // medials
+    	  break;
       case 0x1039:
         mmClass = MMC_VI; // virama
         break;
+      case 0x103A:
+          mmClass = MMC_KI; // visible killer
+          break;
       case 0x1031:
         mmClass = MMC_EV; // e vowel (thwetoo)
         break;
@@ -505,6 +438,7 @@ public class MyanmarParser
       case 0x1032:
         mmClass = MMC_UV; // upper vowel
         break;
+      case 0x102b:
       case 0x102c:
         mmClass = MMC_AV; // a vowel / yecha
         break;
@@ -579,9 +513,9 @@ public class MyanmarParser
       case 0x203a:
         mmClass = MMC_RQ; // right quote / bracket
         break;
-      case 0x200c:
-        mmClass = MMC_NJ; // ZWNJ
-        break;
+      //case 0x200c:
+      //  mmClass = MMC_NJ; // ZWNJ
+      //  break;
       case 0x200d:
       case 0x2060:
         mmClass = MMC_WJ; // Word joiner
