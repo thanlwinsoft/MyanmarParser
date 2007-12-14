@@ -3,8 +3,9 @@
  * Description: Syllable based Myanmar Parser
  * Copyright:   Copyright (c) 2005 http://www.thanlwinsoft.org
  *
- * @author Keith Stribley
- * @version 0.1
+ * $LastChangedBy: keith $
+ * $LastChangedDate: 2006-10-23 13:37:55 +0100 (Mon, 23 Oct 2006) $
+ * $LastChangedRevision: 668 $
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -74,7 +75,8 @@ public class MyanmarParser
   public final static int BK_STACK_SYLLABLE = 8; // within a stacked combination
   // usually you want to line break after the last whitespace character, though
   // you don't count the whitespace in the line width
-
+  public final static int LANG_MY = 0; // Myanmar
+  public final static int LANG_KSW = 1; // S'Gaw Karen
   /**
    * Finds the next syllable in the string starting at a given offset.
    * The caller must check the return value to know whether a break is 
@@ -89,6 +91,7 @@ public class MyanmarParser
     int i = offset;
     boolean foundCluster = false;
     if (offset >= text.length()) return null;
+    int langGuess = guessLanguage(text.toCharArray());
     while (i + 1 < text.length())
     {
       int breakStatus = getBreakStatus(text.charAt(i),text.charAt(i+1));
@@ -113,7 +116,7 @@ public class MyanmarParser
           foundCluster = true;
           break;
         case BK_CONTEXT:
-          breakType = evaluateContext(text, i);
+          breakType = evaluateContext(text, i, langGuess);
           if (breakType != BK_NO_BREAK)
             foundCluster = true;
           break;
@@ -141,6 +144,7 @@ public class MyanmarParser
     int i = offset;
     boolean foundCluster = false;
     if (offset >= text.length) return null;
+    int langGuess = guessLanguage(text);
     while (i + 1 < text.length)
     {
       int breakStatus = getBreakStatus(text[i],text[i+1]);
@@ -158,7 +162,7 @@ public class MyanmarParser
           foundCluster = true;
           break;
         case BK_CONTEXT:
-          breakType = evaluateContext(new String(text), i);
+          breakType = evaluateContext(new String(text), i, langGuess);
           if (breakType != BK_NO_BREAK)
             foundCluster = true;
           break;
@@ -172,7 +176,35 @@ public class MyanmarParser
     return new ClusterProperties(offset, i + 1, breakType);
   }
     
-  
+  public int guessLanguage(char [] text)
+  {
+    int language = LANG_MY;
+    char prevChar = ' ';
+    for (int i = 0; i < text.length && language == LANG_MY; i++)
+    {
+        // we could look for specific sequences that are Karen specific as well
+        switch (text[i])
+        {
+        case 0x1060:
+        case 0x1061:
+        case 0x1062:
+        case 0x1063:
+        case 0x1064:
+            language = LANG_KSW;
+            break;
+        case 0x102C:
+            if (prevChar == 0x1036 || prevChar == 0x1037)
+            {
+                language = LANG_KSW;
+                break;
+            }
+        default:
+            prevChar = text[i];
+        }
+    }
+    return language;
+  }
+    
   /**
    * Finds the next line break point in the string starting at a given offset.
    * The caller must check the return value to know whether a break is 
@@ -279,7 +311,7 @@ public class MyanmarParser
   * @param offset
   * @return break status of specified offset in text
   */                      
-  protected int evaluateContext(String contextText, int offset)
+  protected int evaluateContext(String contextText, int offset, int langHint)
   {
     char [] text;
     if (contextText.length() >= offset + 4) 
@@ -298,13 +330,15 @@ public class MyanmarParser
     if (text[0] == 0x1021) return BK_NO_BREAK;
     
     if (text[1] == 0x002d) return BK_NO_BREAK;
+    if (text[1] == 0x103F) return BK_NO_BREAK;
     
     if (text[2] == 0x1039)
     {
       return BK_NO_BREAK;
     }
-    else if (text[2] == 0x103A)
+    else if (text[2] == 0x103A && langHint == LANG_MY)
     {
+      // Karen (and also some load words in Myanmar) can have a starting 103A
       return BK_NO_BREAK;
     }
     else
@@ -326,15 +360,15 @@ public class MyanmarParser
       {
         // ci me vi ev uv lv av an ki ld vg md se vs pl pv sp lq rq wj ot 
     /*ci*/{ 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
-    /*me*/{ 3, 0, 4, 0, 0, 0, 0, 0, 4, 4, 4, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
+    /*me*/{ 3, 0, 4, 0, 0, 0, 0, 0, 4, 0, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
     /*vi*/{ 0, 4, 0, 4, 0, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 1, 2, 5, 0, 1 },
     /*ev*/{ 3, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
     /*uv*/{ 3, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
     /*lv*/{ 3, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
-    /*av*/{ 3, 4, 0, 4, 4, 4, 4, 0, 0, 0, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
-    /*an*/{ 2, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
+    /*av*/{ 3, 4, 0, 4, 4, 4, 0, 0, 0, 0, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
+    /*an*/{ 2, 4, 4, 4, 4, 4, 0, 4, 0, 0, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
     /*ki*/{ 2, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
-    /*ld*/{ 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
+    /*ld*/{ 2, 4, 4, 4, 4, 4, 0, 4, 4, 4, 0, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
     /*vg*/{ 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 5, 5, 2, 4, 1, 2, 5, 0, 1 },
     /*md*/{ 1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 2, 5, 0, 1 },
     /*se*/{ 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 4, 1, 1, 4, 1, 2, 5, 0, 1 },
@@ -346,6 +380,7 @@ public class MyanmarParser
     /*rq*/{ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 5, 0, 1 },
     /*wj*/{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 5, 0, 0 },
     /*ot*/{ 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 0, 0 }
+        // ci me vi ev uv lv av an ki ld vg md se vs pl pv sp lq rq wj ot 
       };
       // nj,vi = 0  e.g. husband 
       // nj,lv = 2 e.g. abbreviation of male I
@@ -409,6 +444,11 @@ public class MyanmarParser
       case 0x1029:
       case 0x102a:
       case 0x104e:
+      case 0x105a:
+      case 0x105b:
+      case 0x105c:
+      case 0x105d:
+      case 0x1061:
       case 0x25cc:
       case 0x103f: // tha kyi is almost like a consonant
       //case 0x002d: // not sure about -
@@ -418,6 +458,9 @@ public class MyanmarParser
       case 0x103c:
       case 0x103d:
       case 0x103e:
+      case 0x105e:
+      case 0x105f:
+      case 0x1060:
     	  mmClass = MMC_ME; // medials
     	  break;
       case 0x1039:
@@ -436,10 +479,15 @@ public class MyanmarParser
       case 0x102d:
       case 0x102e:
       case 0x1032:
+      case 0x1033:
+      case 0x1034:
         mmClass = MMC_UV; // upper vowel
         break;
       case 0x102b:
       case 0x102c:
+      case 0x1062:
+      case 0x1063:
+      case 0x1064:
         mmClass = MMC_AV; // a vowel / yecha
         break;
       case 0x1036:
@@ -496,6 +544,7 @@ public class MyanmarParser
         mmClass = MMC_SP; // Space
         break;
       case 0x0028:
+      case 0x003C:
       case 0x005b:
       case 0x007b:
       case 0x00ab:
@@ -505,6 +554,7 @@ public class MyanmarParser
         mmClass = MMC_LQ; // left quote/bracket
         break;
       case 0x0029:
+      case 0x003E:
       case 0x005d:
       case 0x007d:
       case 0x00bb:
@@ -543,8 +593,8 @@ public class MyanmarParser
           mmClass = MMC_RQ;
         }
         else if (Character.getType(mmChar) == Character.OTHER_PUNCTUATION ||
-                 Character.getType(mmChar) == Character.DASH_PUNCTUATION || 
-                 Character.getType(mmChar) == Character.MODIFIER_SYMBOL)
+                 Character.getType(mmChar) == Character.DASH_PUNCTUATION /*|| 
+                 Character.getType(mmChar) == Character.MODIFIER_SYMBOL*/)
         {
           mmClass = MMC_VS;
         }

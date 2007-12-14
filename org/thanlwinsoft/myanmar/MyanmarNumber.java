@@ -3,8 +3,9 @@
  * Description: Syllable based Myanmar Parser
  * Copyright:   Copyright (c) 2005 http://www.thanlwinsoft.org
  *
- * @author Keith Stribley
- * @version 0.1
+ * $LastChangedBy: keith $
+ * $LastChangedDate: 2006-09-18 14:33:38 +0100 (Mon, 18 Sep 2006) $
+ * $LastChangedRevision: 629 $
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
