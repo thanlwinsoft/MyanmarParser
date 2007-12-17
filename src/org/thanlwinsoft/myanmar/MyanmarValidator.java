@@ -109,6 +109,7 @@ public class MyanmarValidator
                 try
                 {
                     int utf32 = r.read();
+		    if (utf32 < 0) break; // end 
                     char [] utf16 = Character.toChars(utf32);
                     if (utf16[0] == (char)'\t') 
                     {
@@ -189,9 +190,10 @@ public class MyanmarValidator
                 {
                     break;
                 }
-            } while(r.ready());
+            } while(true);
         }
-        catch (IOException e)
+        //catch (IOException e)
+	finally
         {
             
         }
