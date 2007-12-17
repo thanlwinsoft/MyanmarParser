@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="MyanmarParser" default="build">
+	<target name="init">
+		<property name="version" value="1.0"/>
+
+		<path id="junit.path">
+			<fileset dir="/opt/eclipse/plugins/org.junit4_4.3.1">
+				<include name="junit.jar" />
+			</fileset>
+		</path>
+	</target>
+	<target name="build-junit" description="compile unit tests">
+		<mkdir dir="classes" />
+		<javac srcdir="src"
+		  destdir="classes"
+			   includes="myanmar.junitTest/*.java"
+		         classpathref="junit.path"
+		         debug="on" />
+	</target>
+	<!-- ================================= 
+          target: name              
+         ================================= -->
+	<target name="build" depends="init" description="--> compile main source">
+		<mkdir dir="classes" />
+		<javac srcdir="src" destdir="classes" 
+			includes="org/thanlwinsoft/myanmar/*.java" debug="on" />
+		<jar destfile="org.thanlwinsoft.myanmar.jar" basedir="classes"
+			includes="org/thanlwinsoft/myanmar/**">
+			<manifest>
+				<attribute name="Main-Class" value="org.thanlwinsoft.myanmar.MyanmarValidator"/>
+				<section name="common">
+				      <attribute name="Specification-Title" value="Tools for checking Myanmar text encoded according to Unicode 5.1"/>
+				      <attribute name="Specification-Version" value="${version}"/>
+				      <attribute name="Specification-Vendor" value="ThanLwinSoft.org"/>
+				      <attribute name="Implementation-Title" value="org.thanlwinsoft.myanmar"/>
+				      <attribute name="Implementation-Version" value="${version} ${TODAY}"/> 
+				      <attribute name="Implementation-Vendor" value="ThanLwinSoft.org"/>
+				    </section>
+			</manifest>
+		</jar>
+	</target>
+	<target name="clean" depends="init" description="remove intermediate files">
+		<delete dir="classes" />
+		<delete file="org.thanlwinsoft.myanmar.jar" />
+	</target>
+</project>
