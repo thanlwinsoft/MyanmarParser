@@ -13,7 +13,7 @@
 		<mkdir dir="classes" />
 		<javac srcdir="src"
 		  destdir="classes"
-			   includes="myanmar.junitTest/*.java"
+			   includes="org.thanlwinsoft.myanmar.junitTest/*.java"
 		         classpathref="junit.path"
 		         debug="on" />
 	</target>
@@ -25,7 +25,7 @@
 		<javac srcdir="src" destdir="classes" 
 			includes="org/thanlwinsoft/myanmar/*.java" debug="on" />
 		<jar destfile="org.thanlwinsoft.myanmar.jar" basedir="classes"
-			includes="org/thanlwinsoft/myanmar/**">
+			includes="org/thanlwinsoft/myanmar/*">
 			<manifest>
 				<attribute name="Main-Class" value="org.thanlwinsoft.myanmar.MyanmarValidator"/>
 				<section name="common">

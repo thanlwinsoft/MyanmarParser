@@ -167,6 +167,21 @@ public class MyanmarValidator
 	{
 		mRef = ref;
 	}
+	
+	protected void logFine(String msg, Deque<Character> utn11Queue)
+	{
+	    sLogger.fine(msg + " " + 
+                mRef + " Ln " + mLine + " Col " + 
+                (mColumn - utn11Queue.size()) + "," +
+                mColumn + " " + dumpQueue(utn11Queue));
+	}
+	protected void logWarning(String msg, Deque<Character> utn11Queue)
+    {
+        sLogger.warning(msg + " " + 
+                mRef + " Ln " + mLine + " Col " + 
+                (mColumn - utn11Queue.size()) + "," +
+                mColumn + " " + dumpQueue(utn11Queue));
+    }
 
     public Status validate(BufferedReader r, BufferedWriter w)
     {
@@ -225,10 +240,9 @@ public class MyanmarValidator
 									badPrefix = true;
 								else
 								{
-									sLogger.warning("Unexpected sequence at: " + 
-										mRef + " Ln " + mLine + " Col " + 
-										(mColumn - utn11Queue.size()) + "," +
-										mColumn + " " + dumpQueue(utn11Queue));
+									logWarning("Unexpected sequence at: ", utn11Queue);
+									if (valid == Status.Valid)
+		                                valid = Status.Invalid;
 								}
 							}
                             continue;
@@ -246,12 +260,16 @@ public class MyanmarValidator
 							// legitimate cases
 							if (utn11Queue.peek() == '\u1040')
 							{
-								sLogger.fine("Corrected wa at: " + 
-									mRef + " Ln " + mLine + " Col " + 
-									(mColumn - utn11Queue.size()) + "," +
-									mColumn + " " + dumpQueue(utn11Queue));
+								logFine("Corrected wa at: ", utn11Queue);
 								utn11Queue.pop();// remove 0 replace with wa
 								utn11Queue.push('\u101D');
+								if (valid == Status.Valid)
+	                                valid = Status.Corrected;
+							}
+							if (utn11Queue.peek() == '\u1044' && utf16[0] == '\u1004')
+							{
+							    utn11Queue.push(utf16[0]);
+                                continue;
 							}
 							if (seq == UTN11.Consonant)
 	                        {
@@ -262,23 +280,51 @@ public class MyanmarValidator
 							utn11Queue.push(utf16[0]);
 							continue;
 						}
-						if (utn11Queue.peek() == '\u1025' && 
-						    (utf16[0] == '\u103A' || utf16[0] == '\u102C'))
-                        {
-                            // should be 1009
-                            utn11Queue.pop();
-                            utn11Queue.push('\u1009');
-                            utn11Queue.push(utf16[0]);
-                            sLogger.fine("Corrected U+1025 at: " + 
-                                    mRef + " Ln " + mLine + " Col " + 
-                                    (mColumn - utn11Queue.size()) + "," +
-                                    mColumn + " " + dumpQueue(utn11Queue));
-                            continue;
-                        }
+						if (utn11Queue.peek() == '\u1025')
+						{
+						    if (utf16[0] == '\u103A' || utf16[0] == '\u1039' || utf16[0] == '\u102C')
+                            {
+                                // should be 1009
+                                utn11Queue.pop();
+                                utn11Queue.push('\u1009');
+                                utn11Queue.push(utf16[0]);
+                                if (valid == Status.Valid)
+                                    valid = Status.Corrected;
+                                logFine("Corrected U+1025 at: ", utn11Queue);
+                                continue;
+                            }
+                            if (utf16[0] == '\u102E')
+                            {
+                                utn11Queue.pop();
+                                utn11Queue.push('\u1026');
+                                logFine("U+1025 U+102E -> U+1026 ", utn11Queue);
+                                if (valid == Status.Valid)
+                                    valid = Status.Corrected;
+                                continue;
+                            }
+						}
                         // 0x103A needs special handling, since it occurs twice
                         // in the sequence
                         if (seq == UTN11.Asat && prevSeq != UTN11.Consonant)
                         {
+                            if (prevSeq == UTN11.LVowel)
+                            {
+                                Character lv = utn11Queue.pop();
+                                utn11Queue.push(utf16[0]);
+                                utn11Queue.push(lv);
+                                if (valid == Status.Valid)
+                                    valid = Status.Corrected;
+                                logFine("Corrected U+102F U+103A: ", utn11Queue);
+                                continue;
+                            }
+                            if (prevSeq == UTN11.Asat)
+                            {
+                                // duplicate asat
+                                logFine("Corrected duplicate U+103A", utn11Queue);
+                                if (valid == Status.Valid)
+                                    valid = Status.Corrected;
+                                continue;
+                            }
                             seq = UTN11.VisibleVirama;
                         }
                         // Is it the next in the sequence within the syllable
@@ -309,19 +355,16 @@ public class MyanmarValidator
                                     prevSeq == UTN11.EVowel))
 								    {
     								    utn11Queue.addLast(utf16[0]);
-    									sLogger.fine("Corrected prefix sequence at: " + 
-    										mRef + " Ln " + mLine + " Col " + 
-    										(mColumn - utn11Queue.size()) + "," +
-    										mColumn + " " + dumpQueue(utn11Queue));
+    								    if (valid == Status.Valid)
+    		                                valid = Status.Corrected;
+    								    logFine("Corrected prefix sequence at: ", 
+    								            utn11Queue);
     									badPrefix = false;
     									continue;
 								    }
 								    else
 								    {
-								        sLogger.warning("Bad prefix at: "
-				                            + mRef + " Ln " + mLine
-				                            + " Col " + (mColumn - utn11Queue.size()) + ","
-				                            + mColumn + " " + dumpQueue(utn11Queue));
+								        logWarning("Bad prefix at: ", utn11Queue);
 								    }
 								}
 								valid = writeQueue(utn11Queue, w, valid);
@@ -334,7 +377,10 @@ public class MyanmarValidator
                         if (utf16[0] == '\u1040' && badPrefix &&
                             (prevSeq == UTN11.EVowel || prevSeq == UTN11.MedialYR ))
                         {
+                            if (valid == Status.Valid)
+                                valid = Status.Corrected;
                             utn11Queue.addLast('\u101D');
+                            logFine("Changed 0 to wa: ", utn11Queue);
                             badPrefix = false;
                             continue;
                         }
@@ -357,10 +403,7 @@ public class MyanmarValidator
 						    char eVowel = utn11Queue.pop();
                             utn11Queue.push(utf16[0]);
                             utn11Queue.push(eVowel);
-                            sLogger.fine("Corrected e/medial ra: "
-                                    + mRef + " Ln " + mLine + " Col "
-                                    + (mColumn - utn11Queue.size()) + ","
-                                    + mColumn + " " + dumpQueue(utn11Queue));
+                            logFine("Corrected e/medial ra: ", utn11Queue);
                             continue;
 						}
 						if ((utn11Queue.size() > 1) && (prevSeq == UTN11.EVowel) && 
@@ -373,10 +416,9 @@ public class MyanmarValidator
 						    {
 						        utn11Queue.push(utf16[0]);
 	                            utn11Queue.push(eVowel);
-	                            sLogger.fine("Corrected e/medial: "
-	                                    + mRef + " Ln " + mLine + " Col "
-	                                    + (mColumn - utn11Queue.size()) + ","
-	                                    + mColumn + " " + dumpQueue(utn11Queue));
+	                            if (valid == Status.Valid)
+	                                valid = Status.Corrected;
+	                            logFine("Corrected e/medial: ",utn11Queue);
 	                            continue;
 						    }
 						    else // badly wrong, give up trying to correct
@@ -393,17 +435,12 @@ public class MyanmarValidator
                             utn11Queue.push(lv);
                             if (valid == Status.Valid)
                                 valid = Status.Corrected;
-                            sLogger.fine("Corrected at: "
-									+ mRef + " Ln " + mLine + " Col "
-                                    + (mColumn - utn11Queue.size()) + ","
-                                    + mColumn + " " + dumpQueue(utn11Queue));
+                            logFine("Corrected at lower/upper vowel order: ", 
+                                    utn11Queue);
                             continue;
                         }
                         utn11Queue.push(utf16[0]);
-                        sLogger.warning("Invalid sequence at: "
-								+ mRef + " Ln " + mLine
-                                + " Col " + (mColumn - utn11Queue.size()) + ","
-                                + mColumn + " " + dumpQueue(utn11Queue));
+                        logWarning("Invalid sequence at: ", utn11Queue);
                         valid = Status.Invalid;
                     }
                 }
@@ -412,7 +449,7 @@ public class MyanmarValidator
                     break;
                 }
             } while (true);
-            if (utn11Queue.size() > 0) writeQueue(utn11Queue, w, valid);
+            if (utn11Queue.size() > 0) valid = writeQueue(utn11Queue, w, valid);
         }
         catch (IOException e)
         {
@@ -438,6 +475,20 @@ public class MyanmarValidator
                     + dumpQueue(utn11Queue));
             if (status == Status.Valid)
                 status = Status.Corrected;
+        }
+        // correct ၄င်း
+        if (utn11Queue.size() == 4 && utn11Queue.peekLast() == '\u1044' && 
+            utn11Queue.peekFirst() == '\u1038')
+        {
+            Character c = utn11Queue.removeLast();
+            if (utn11Queue.peekLast() == '\u1004')
+            {
+                w.write('\u104E');
+                if (status == Status.Valid)
+                    status = Status.Corrected;
+                logFine("Corrected ၄င်း", utn11Queue);
+            }
+            else w.write(c);
         }
         // write the characters, starting with the oldest char on the stack
         while (utn11Queue.size() > 0)

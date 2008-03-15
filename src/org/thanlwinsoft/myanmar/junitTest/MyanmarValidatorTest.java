@@ -13,7 +13,11 @@ import org.thanlwinsoft.myanmar.MyanmarValidator;
 
 public class MyanmarValidatorTest
 {
-    private MyanmarValidator.Status validate(String in, String expectedOut)
+    private void correct(String in, String expectedOut)
+    {
+        validate(in, expectedOut, MyanmarValidator.Status.Corrected);
+    }
+    private void validate(String in, String expectedOut, MyanmarValidator.Status expectedStatus)
     {
         MyanmarValidator mv = new MyanmarValidator();
         BufferedReader inReader = new BufferedReader(new StringReader(in));
@@ -39,59 +43,98 @@ public class MyanmarValidatorTest
             e.printStackTrace();
             fail("Exception during validate. " + e);
         }
-        return status;
+        if (status != expectedStatus)
+        {
+            fail("Unexpected status " + status + " (expected " + 
+                 expectedStatus + ")");
+        }
     }
     
     @Test
     public void testValidate01()
     {
-        validate("မြန်မာ","မြန်မာ");
+        validate("မြန်မာ","မြန်မာ", MyanmarValidator.Status.Valid);
     }
     @Test
     public void testValidate02()
     {
-        validate(" ေက"," ကေ");
+        correct(" ေက"," ကေ");
     }
     @Test
     public void testValidate03()
     {
-        validate("၀င်း","ဝင်း");
+        correct("၀င်း","ဝင်း");
     }
     @Test
     public void testValidate04()
     {
-        validate("၀ါ","ဝါ");
+        correct("၀ါ","ဝါ");
     }
     @Test
     public void testValidate05()
     {
-        validate("ေ၀","ဝေ");
+        correct("ေ၀","ဝေ");
     }
     @Test
     public void testValidate06()
     {
-        validate("ကုိ","ကို");
+        correct("ကုိ","ကို");
     }
     @Test
     public void testValidate07()
     {
-        validate("ဦ","ဦ");
+        correct("ဦ","ဦ");
     }
     @Test
     public void testValidate08()
     {
-        validate("ဥ်","ဉ်");
+        correct("ဥ်","ဉ်");
     }
     @Test
     public void testValidate09()
     {
-        validate("ဥာ","ဉာ");
+        correct("ဥာ","ဉာ");
     }
     @Test
     public void testValidate10()
     {
         // should we try to correct this?
-        if (validate("ကွြ","ကွြ"/*"ကြွ"*/) != MyanmarValidator.Status.Invalid)
-            fail("Failed to detect wrong medial order.");
+        validate("ကွြ","ကွြ"/*"ကြွ"*/,  MyanmarValidator.Status.Invalid);
     }
+    @Test
+    public void testValidate11()
+    {
+        correct("ေြကာင်း","ကြောင်း");
+    }
+    @Test
+    public void testValidate12()
+    {
+        correct("၀တ္တု","ဝတ္တု");
+    }
+    @Test
+    public void testValidate13()
+    {
+        correct("ေရှ့","ရှေ့");
+    }
+    @Test
+    public void testValidate14()
+    {
+        correct("ကျွနု်ပ်", "ကျွန်ုပ်");
+    }
+    @Test
+    public void testValidate15()
+    {
+        correct("ထုတ််", "ထုတ်");
+    }
+    @Test
+    public void testValidate16()
+    {
+        correct("၄င်း",  "၎င်း");
+    }
+    @Test
+    public void testValidate17()
+    {
+        correct("ပဥ္စ",  "ပဉ္စ");
+    }
+    
 }
