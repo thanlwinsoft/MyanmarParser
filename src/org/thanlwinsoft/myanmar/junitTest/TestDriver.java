@@ -1,9 +1,8 @@
-/*  XQEngine Copyright (C) 2002-2005 Fatdog Software Inc. [howardk@fatdog.com]
- *	--------------------------------------------------------------------------
- *  This file is part of XQEngine and is distributed under the terms of the
- *  GNU General Public License. See additional info at the end of this file. */
+/*  This file is part of org.thanlwinsoft.myanmar and is distributed under the 
+ *  terms of the GNU General Public License. 
+ *  See additional info at the end of this file. */
 
-package myanmar.junitTest;
+package org.thanlwinsoft.myanmar.junitTest;
 
 import junit.framework.*;
 
@@ -13,13 +12,11 @@ import junit.framework.*;
 	 * <P>Can be invoked as:
 	 * <BR>
 	 * <PRE>
-	 *        com.fatdog.xmlEngine.junitTest.TestDriver
+	 *        org.thanlwinsoft.myanmar.test.TestDriver
 	 * </PRE>
 	 * 
 	 * <P>Make sure that junit.jar is on the classpath.
 	 * 
-	 * @author Howard Katz, howardk@fatdog.com
-	 * @version 0.69
 	 */
 
 public class TestDriver extends TestCase
@@ -41,12 +38,12 @@ public class TestDriver extends TestCase
 	}
 }
 /*
- *  XQEngine is free software; you can redistribute it and/or
+ *  org.thanlwinsoft.myanmar is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version 2
  *  of the License, or (at your option) any later version.
  * 
- *  XQEngine is distributed in the hope that it will be useful,
+ *  org.thanlwinsoft.myanmar is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.

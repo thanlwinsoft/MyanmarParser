@@ -262,23 +262,24 @@ public class MyanmarValidator
 							utn11Queue.push(utf16[0]);
 							continue;
 						}
+						if (utn11Queue.peek() == '\u1025' && 
+						    (utf16[0] == '\u103A' || utf16[0] == '\u102C'))
+                        {
+                            // should be 1009
+                            utn11Queue.pop();
+                            utn11Queue.push('\u1009');
+                            utn11Queue.push(utf16[0]);
+                            sLogger.fine("Corrected U+1025 at: " + 
+                                    mRef + " Ln " + mLine + " Col " + 
+                                    (mColumn - utn11Queue.size()) + "," +
+                                    mColumn + " " + dumpQueue(utn11Queue));
+                            continue;
+                        }
                         // 0x103A needs special handling, since it occurs twice
                         // in the sequence
                         if (seq == UTN11.Asat && prevSeq != UTN11.Consonant)
                         {
                             seq = UTN11.VisibleVirama;
-                            if (utn11Queue.peek() == '\u1025')
-                            {
-                                // should be 1009
-                                utn11Queue.pop();
-                                utn11Queue.push('\u1009');
-                                utn11Queue.push(utf16[0]);
-                                sLogger.fine("Corrected U+1025 U+103A at: " + 
-                                        mRef + " Ln " + mLine + " Col " + 
-                                        (mColumn - utn11Queue.size()) + "," +
-                                        mColumn + " " + dumpQueue(utn11Queue));
-                                continue;
-                            }
                         }
                         // Is it the next in the sequence within the syllable
                         // structure?

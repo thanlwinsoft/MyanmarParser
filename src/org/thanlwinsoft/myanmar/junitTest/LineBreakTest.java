@@ -1,4 +1,4 @@
-package myanmar.junitTest;
+package org.thanlwinsoft.myanmar.junitTest;
 
 import junit.framework.*;
 import junit.extensions.TestSetup;
