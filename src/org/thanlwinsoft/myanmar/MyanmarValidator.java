@@ -73,6 +73,7 @@ public class MyanmarValidator
                 return Number;
             switch (c)
             {
+            case 0x103F:
             case 0x25CC:// special case for dotted circle
                 return Consonant;
             case 0x1022:

@@ -136,5 +136,9 @@ public class MyanmarValidatorTest
     {
         correct("ပဥ္စ",  "ပဉ္စ");
     }
-    
+    @Test
+    public void testValidate18()
+    {
+        validate("ဒုဿီ", "ဒုဿီ", MyanmarValidator.Status.Valid);
+    }
 }

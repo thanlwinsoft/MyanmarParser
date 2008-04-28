@@ -14,6 +14,8 @@ public class LineBreakTest extends TestCase
   final String STRING_D = "ငွေကြေး";
   final String STRING_E = "ကုုိ";
   final String STRING_F = "ဘာ လဲ။";
+  final String STRING_G = "(ရေ)";
+
   public void test_lb_0() 
   {
     ClusterProperties cp = myParser.getNextSyllable(STRING_A, 0);
@@ -374,6 +376,27 @@ public class LineBreakTest extends TestCase
                  cp.getBreakStatus());
   }
   
+  public void test_lba_25() // (
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_G.toCharArray(), 0);
+    assertEquals(cp.toString(), 1, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.BK_SYLLABLE,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_26() //
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_G.toCharArray(), 1);
+    assertEquals(cp.toString(), 3, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.BK_SYLLABLE,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_27() // )
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_G.toCharArray(), 3);
+    assertEquals(cp.toString(), 4, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.BK_EOL,
+                 cp.getBreakStatus());
+  }
   public static Test suite() //
   {
     TestSuite suite = new TestSuite(LineBreakTest.class);
