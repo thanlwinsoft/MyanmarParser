@@ -218,10 +218,10 @@ public class Analysis
                 ArrayDeque<String> syllables = new ArrayDeque<String>(); 
                 MyanmarParser.ClusterProperties cp = mParser.getNextSyllable(validated, offset);
                 String syllableText = validated.substring(cp.getStart(), cp.getEnd());
-                while (cp != null && cp.getBreakStatus() != MyanmarParser.BK_EOL)
+                while (cp != null && cp.getBreakStatus() != MyanmarParser.MyPairStatus.MY_PAIR_EOL)
                 {
                     if (mParser.isMyanmarCharacter(syllableText.charAt(0)) == false ||
-                        cp.getBreakStatus() == MyanmarParser.BK_WHITESPACE)
+                        cp.getBreakStatus() == MyanmarParser.MyPairStatus.MY_PAIR_WORD_BREAK)
                     {
                         processSyllables(syllables);
                         syllables.clear();
