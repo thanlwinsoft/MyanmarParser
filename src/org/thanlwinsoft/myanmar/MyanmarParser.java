@@ -45,6 +45,7 @@ public class MyanmarParser
     // you don't count the whitespace in the line width
     public final static int LANG_MY = 0; // Myanmar
     public final static int LANG_KSW = 1; // S'Gaw Karen
+    public final static int LANG_PWO = 2; // Pwo Karen
   
     public enum MySyllablePart
     {
@@ -241,9 +242,9 @@ public class MyanmarParser
     		 //-  C  M  V  T 39 3A  N  S
     		 { 2, 3, 1, 1, 1, 1, 1, 1, 1 },//-
     		 { 3, 5, 1, 1, 1, 1, 1, 2, 4 },//C
-    		 { 1, 5, 1, 1, 0, 0, 0, 2, 4 },//M
+    		 { 1, 5, 1, 1, 1, 0, 0, 2, 4 },//M
     		 { 3, 5, 0, 1, 1, 0, 1, 2, 4 },//V
-    		 { 3, 2, 0, 0, 0, 0, 0, 2, 4 },//T
+    		 { 3, 2, 0, 1, 1, 0, 0, 2, 4 },//T
     		 { 3, 1, 0, 0, 0, 0, 0, 0, 0 },//1039
     		 { 3, 2, 1, 1, 1, 1, 0, 2, 4 },//103A
     		 { 1, 2, 1, 1, 1, 0, 0, 1, 4 },//N
@@ -368,6 +369,17 @@ public class MyanmarParser
         case 0x1064:
             language = LANG_KSW;
             break;
+        case 0x1065:
+        case 0x1066:
+        case 0x1067:
+        case 0x1068:
+        case 0x1069:
+        case 0x106a:
+        case 0x106b:
+        case 0x106c:
+        case 0x106d:
+        	language = LANG_PWO;
+        	break;
         case 0x102C:
             if (prevChar == 0x1036 || prevChar == 0x1037)
             {
@@ -503,7 +515,7 @@ public class MyanmarParser
       }
     }
     // deal with easy cases first
-    if (text[0] == 0x1021) return MyPairStatus.MY_PAIR_NO_BREAK;
+    if (text[0] == 0x1021 && langHint == LANG_MY) return MyPairStatus.MY_PAIR_NO_BREAK;
 
     if (text[1] == 0x002d) return MyPairStatus.MY_PAIR_NO_BREAK;
     if (text[1] == 0x103F) return MyPairStatus.MY_PAIR_NO_BREAK;

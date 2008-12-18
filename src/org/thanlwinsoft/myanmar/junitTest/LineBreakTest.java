@@ -15,8 +15,10 @@ public class LineBreakTest extends TestCase
   final String STRING_E = "ကုုိ";
   final String STRING_F = "ဘာ လဲ။";
   final String STRING_G = "(ရေ)";
+  final String STRING_H = "လံၬၥီၪ့ထဲၩ့ဆၧလၧစယီဟၫ့ကွ့ၭဝ့ၫအခၪ့ထံၭလဘံၪ့လီၫ.";// Pwo Karen
+  final String STRING_I = "ဟ့အဒီပုၢ်ဝဲၢ်န့ၣ်";//Sgaw Karen
 
-  public void test_lb_0() 
+  public void test_lb_0()
   {
     ClusterProperties cp = myParser.getNextSyllable(STRING_A, 0);
     assertEquals(cp.toString(), 6, cp.getEnd());
@@ -399,10 +401,175 @@ public class LineBreakTest extends TestCase
     assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_EOL,
                  cp.getBreakStatus());
   }
+ 
+  public void test_lba_pwo_1() //      လံၬ|ၥီၪ့ထဲၩ့ဆၧလၧစယီဟၫ့ကွ့ၭဝ့ၫအခၪ့ထံၭလဘံၪ့လီၫ.
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_H.toCharArray(), 0);
+    assertEquals(cp.toString(), 3, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_SYL_BREAK,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_pwo_2() //      လံၬၥီၪ့|ထဲၩ့ဆၧလၧစယီဟၫ့ကွ့ၭဝ့ၫအခၪ့ထံၭလဘံၪ့လီၫ.
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_H.toCharArray(), 3);
+    assertEquals(cp.toString(), 7, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_SYL_BREAK,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_pwo_3() //      လံၬၥီၪ့ထဲၩ့|ဆၧလၧစယီဟၫ့ကွ့ၭဝ့ၫအခၪ့ထံၭလဘံၪ့လီၫ.
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_H.toCharArray(), 7);
+    assertEquals(cp.toString(), 11, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_SYL_BREAK,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_pwo_4() //      လံၬၥီၪ့ထဲၩ့ဆၧ|လၧစယီဟၫ့ကွ့ၭဝ့ၫအခၪ့ထံၭလဘံၪ့လီၫ.
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_H.toCharArray(), 11);
+    assertEquals(cp.toString(), 13, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_SYL_BREAK,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_pwo_5() //      လံၬၥီၪ့ထဲၩ့ဆၧလၧ|စယီဟၫ့ကွ့ၭဝ့ၫအခၪ့ထံၭလဘံၪ့လီၫ.
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_H.toCharArray(), 13);
+    assertEquals(cp.toString(), 15, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_SYL_BREAK,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_pwo_6() //      လံၬၥီၪ့ထဲၩ့ဆၧလၧစ|ယီဟၫ့ကွ့ၭဝ့ၫအခၪ့ထံၭလဘံၪ့လီၫ.
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_H.toCharArray(), 15);
+    assertEquals(cp.toString(), 16, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_SYL_BREAK,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_pwo_7() //      လံၬၥီၪ့ထဲၩ့ဆၧလၧစယီ|ဟၫ့ကွ့ၭဝ့ၫအခၪ့ထံၭလဘံၪ့လီၫ.
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_H.toCharArray(), 16);
+    assertEquals(cp.toString(), 18, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_SYL_BREAK,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_pwo_8() //      လံၬၥီၪ့ထဲၩ့ဆၧလၧစယီဟၫ့|ကွ့ၭဝ့ၫအခၪ့ထံၭလဘံၪ့လီၫ.
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_H.toCharArray(), 18);
+    assertEquals(cp.toString(), 21, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_SYL_BREAK,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_pwo_9() //      လံၬၥီၪ့ထဲၩ့ဆၧလၧစယီဟၫ့ကွ့ၭဝ့ၫ|အခၪ့ထံၭလဘံၪ့လီၫ.
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_H.toCharArray(), 21);
+    assertEquals(cp.toString(), 25, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_SYL_BREAK,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_pwo_9b() //     လံၬၥီၪ့ထဲၩ့ဆၧလၧစယီဟၫ့ကွ့ၭဝ့ၫ|အခၪ့ထံၭလဘံၪ့လီၫ.
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_H.toCharArray(), 25);
+    assertEquals(cp.toString(), 28, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_SYL_BREAK,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_pwo_10() //     လံၬၥီၪ့ထဲၩ့ဆၧလၧစယီဟၫ့ကွ့ၭဝ့ၫအ|ခၪ့ထံၭလဘံၪ့လီၫ.
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_H.toCharArray(), 28);
+    assertEquals(cp.toString(), 29, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_SYL_BREAK,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_pwo_11() //     လံၬၥီၪ့ထဲၩ့ဆၧလၧစယီဟၫ့ကွ့ၭဝ့ၫအခၪ့|ထံၭလဘံၪ့လီၫ.
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_H.toCharArray(), 29);
+    assertEquals(cp.toString(), 32, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_SYL_BREAK,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_pwo_12() //     လံၬၥီၪ့ထဲၩ့ဆၧလၧစယီဟၫ့ကွ့ၭဝ့ၫအခၪ့ထံၭ|လဘံၪ့လီၫ.
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_H.toCharArray(), 32);
+    assertEquals(cp.toString(), 35, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_SYL_BREAK,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_pwo_13() //      လံၬၥီၪ့ထဲၩ့ဆၧလၧစယီဟၫ့ကွ့ၭဝ့ၫအခၪ့ထံၭလ|ဘံၪ့လီၫ.
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_H.toCharArray(), 35);
+    assertEquals(cp.toString(), 36, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_SYL_BREAK,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_pwo_14() //     လံၬၥီၪ့ထဲၩ့ဆၧလၧစယီဟၫ့ကွ့ၭဝ့ၫအခၪ့ထံၭလဘံၪ့|လီၫ.
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_H.toCharArray(), 36);
+    assertEquals(cp.toString(), 40, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_SYL_BREAK,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_pwo_15() //     လံၬၥီၪ့ထဲၩ့ဆၧလၧစယီဟၫ့ကွ့ၭဝ့ၫအခၪ့ထံၭလဘံၪ့လီၫ|.
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_H.toCharArray(), 40);
+    assertEquals(cp.toString(), 43, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_WORD_BREAK,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_pwo_16() //      လံၬၥီၪ့ထဲၩ့ဆၧလၧစယီဟၫ့ကွ့ၭဝ့ၫအခၪ့ထံၭလဘံၪ့လီၫ.
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_H.toCharArray(), 43);
+    assertEquals(cp.toString(), 44, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_EOL,
+                 cp.getBreakStatus());
+  }
+  //
+  public void test_lba_ksw_01() //     ဟ့|အဒီပုၢ်ဝဲၢ်န့ၣ်      
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_I.toCharArray(), 0);
+    assertEquals(cp.toString(), 2, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_SYL_BREAK,
+                 cp.getBreakStatus());
+  }
+  
+  public void test_lba_ksw_02() //     ဟ့အ|ဒီပုၢ်ဝဲၢ်န့ၣ်      
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_I.toCharArray(), 2);
+    assertEquals(cp.toString(), 3, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_SYL_BREAK,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_ksw_03() //     ဟ့အဒီ|ပုၢ်ဝဲၢ်န့ၣ်      
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_I.toCharArray(), 3);
+    assertEquals(cp.toString(), 5, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_SYL_BREAK,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_ksw_04() //     ဟ့အဒီပုၢ်|ဝဲၢ်န့ၣ်      
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_I.toCharArray(), 5);
+    assertEquals(cp.toString(), 9, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_SYL_BREAK,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_ksw_05() //     ဟ့အဒီပုၢ်ဝဲၢ်|န့ၣ်      
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_I.toCharArray(), 9);
+    assertEquals(cp.toString(), 13, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_SYL_BREAK,
+                 cp.getBreakStatus());
+  }
+  public void test_lba_ksw_06() //     ဟ့အဒီပုၢ်ဝဲၢ်န့ၣ်|
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_I.toCharArray(), 13);
+    assertEquals(cp.toString(), 17, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_EOL,
+                 cp.getBreakStatus());
+  }
+  
   public static Test suite() //
   {
-    TestSuite suite = new TestSuite(LineBreakTest.class);
-    TestSetup setup = new TestSetup( suite ) {
+      TestSuite suite = new TestSuite(LineBreakTest.class);
+      TestSetup setup = new TestSetup( suite ) {
       protected void setUp() throws Exception 
       {
         myParser = new MyanmarParser();
