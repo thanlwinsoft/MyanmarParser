@@ -1,5 +1,22 @@
 package org.thanlwinsoft.myanmar;
-
+/*
+ * Copyright:   Copyright (c) 2008 http://www.thanlwinsoft.org
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this program; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA  02111-1307  USA
+ */
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,6 +33,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
+
 /**
  * Analysis of text to extract and count the occurrences of each Myanmar syllable.
  * If the -c option is used, then the number of occurrences is reported for
@@ -28,9 +46,13 @@ public class Analysis
     
     private int mMaxContext = 1;
     private Map<Syllable, Integer> mSyllables = new TreeMap<Syllable, Integer> ();
-    private MyanmarValidator mValidator = new MyanmarValidator();
+    private Validator mValidator = null;
     private MyanmarParser mParser = new MyanmarParser();
     
+    /**
+     * Command Line analysis
+     * @param arg [options] input output
+     */
     public static void main(String[] arg)
     {
         final String eol = System.getProperty("line.separator");
@@ -77,7 +99,7 @@ public class Analysis
         }
         BufferedReader br = null;
         BufferedWriter bw = null;
-        Analysis analizer = new Analysis(contextLength);
+        Analysis analizer = new Analysis(new MyanmarValidator(), contextLength);
         for (int i = firstArg; i < arg.length - 1; i++)
         {
             File inputFile = new File(arg[i]);
@@ -121,7 +143,12 @@ public class Analysis
             sLogger.warning(e.getLocalizedMessage());
         }
     }
-    
+    /**
+     * output results to a writer
+     * @param bw
+     * @param outputStats
+     * @throws IOException
+     */
     public void writeResults(BufferedWriter bw, boolean outputStats) throws IOException
     {
         Iterator <Syllable> i = mSyllables.keySet().iterator();
@@ -138,11 +165,21 @@ public class Analysis
         }
     }
 
-    public class Syllable implements Comparable<Syllable> 
+    /**
+     * Class to hold syllable information
+     * @author keith
+     *
+     */
+    public class Syllable implements Comparable<Syllable>
     {
         private String mText;
         private int mCount = 1;
         private ArrayDeque<String> mFollowing;
+        /**
+         * Syllable constructor
+         * @param s - the syllable
+         * @param following syllables
+         */
         public Syllable(String s, ArrayDeque<String> following)
         {
             mText = s;
@@ -180,7 +217,14 @@ public class Analysis
             }
             return r;
         }
+        /**
+         * increment count of this syllables occurances
+         */
         public void add() { mCount++; }
+        /**
+         * 
+         * @return number of occurances of syllable
+         */
         public int getCount() { return mCount; }
 
         @Override
@@ -195,17 +239,28 @@ public class Analysis
         }
         
     }
-    
-    public Analysis(int contextLength)
+    /**
+     * Constructor
+     * @param validator
+     * @param contextLength
+     */
+    public Analysis(Validator validator, int contextLength)
     {
+    	mValidator = validator;
         mMaxContext = contextLength;
     }
 
+    /**
+     * analyse data from reader
+     * @param br
+     * @throws IOException
+     */
     public void analyse(BufferedReader br) throws IOException
     {
         String line = null;
         while ((line = br.readLine()) != null)
         {
+        	if (line.length() == 0) continue;
             BufferedReader lineReader = new BufferedReader(new StringReader(line));
             StringWriter validateWriter = new StringWriter();
             BufferedWriter lineWriter = new BufferedWriter(validateWriter);
@@ -217,26 +272,33 @@ public class Analysis
                 int offset = 0;
                 ArrayDeque<String> syllables = new ArrayDeque<String>(); 
                 MyanmarParser.ClusterProperties cp = mParser.getNextSyllable(validated, offset);
-                String syllableText = validated.substring(cp.getStart(), cp.getEnd());
-                while (cp != null && cp.getBreakStatus() != MyanmarParser.MyPairStatus.MY_PAIR_EOL)
+                if (cp == null)
                 {
-                    if (mParser.isMyanmarCharacter(syllableText.charAt(0)) == false ||
-                        cp.getBreakStatus() == MyanmarParser.MyPairStatus.MY_PAIR_WORD_BREAK)
-                    {
-                        processSyllables(syllables);
-                        syllables.clear();
-                    }
-                    else
-                    {
-                        syllables.push(syllableText);
-                    }
-                    offset = cp.getEnd();
-                    cp = mParser.getNextSyllable(validated, offset);
-                    syllableText = validated.substring(cp.getStart(), cp.getEnd());
+                	sLogger.warning("Failed to get syllable for: " + validated);
                 }
-                if (mParser.isMyanmarCharacter(syllableText.charAt(0)))
-                    syllables.push(syllableText);
-                processSyllables(syllables);
+                else
+                {
+	                String syllableText = validated.substring(cp.getStart(), cp.getEnd());
+	                while (cp != null && cp.getBreakStatus() != MyanmarParser.MyPairStatus.MY_PAIR_EOL)
+	                {
+	                    if (mParser.isMyanmarCharacter(syllableText.charAt(0)) == false ||
+	                        cp.getBreakStatus() == MyanmarParser.MyPairStatus.MY_PAIR_WORD_BREAK)
+	                    {
+	                        processSyllables(syllables);
+	                        syllables.clear();
+	                    }
+	                    else
+	                    {
+	                        syllables.push(syllableText);
+	                    }
+	                    offset = cp.getEnd();
+	                    cp = mParser.getNextSyllable(validated, offset);
+	                    syllableText = validated.substring(cp.getStart(), cp.getEnd());
+	                }
+	                if (mParser.isMyanmarCharacter(syllableText.charAt(0)))
+	                    syllables.push(syllableText);
+	                processSyllables(syllables);
+                }
             }
             else
             {

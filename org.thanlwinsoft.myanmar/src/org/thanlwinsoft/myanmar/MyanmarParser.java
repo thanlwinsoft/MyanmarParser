@@ -3,10 +3,6 @@
  * Description: Syllable based Myanmar Parser
  * Copyright:   Copyright (c) 2005 http://www.thanlwinsoft.org
  *
- * $LastChangedBy: keith $
- * $LastChangedDate: 2006-10-23 13:37:55 +0100 (Mon, 23 Oct 2006) $
- * $LastChangedRevision: 668 $
- * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -37,38 +33,107 @@ import java.util.ArrayList;
 */
 public class MyanmarParser
 {
-	// Myanmar Constants
+	/** Myanmar Context length required to test for break */
 	public final static int MAX_CONTEXT_LENGTH = 3;
 	// character classes
 
 	// usually you want to line break after the last whitespace character, though
     // you don't count the whitespace in the line width
+	/**
+	 * Myanmar
+	 */
     public final static int LANG_MY = 0; // Myanmar
+    /**
+     * Sgaw Karen
+     */
     public final static int LANG_KSW = 1; // S'Gaw Karen
+    /**
+     * Pwo Karen
+     */
     public final static int LANG_PWO = 2; // Pwo Karen
   
+    /**
+     * Parts of a Myanmar syllable
+     * @author keith
+     *
+     */
     public enum MySyllablePart
     {
+    	/**
+    	 * Unknown - not Myanmar
+    	 */
 	    MY_SYLLABLE_UNKNOWN,
+	    /**
+	     * consonant
+	     */
 	    MY_SYLLABLE_CONSONANT,
+	    /**
+	     * medial
+	     */
 	    MY_SYLLABLE_MEDIAL,
+	    /**
+	     * vowel
+	     */
 	    MY_SYLLABLE_VOWEL,
+	    /**
+	     * tone
+	     */
 	    MY_SYLLABLE_TONE,
+	    /**
+	     * virama for stacking
+	     */
 	    MY_SYLLABLE_1039,
+	    /**
+	     * asat visible virama
+	     */
 	    MY_SYLLABLE_103A,
+	    /**
+	     * number
+	     */
 	    MY_SYLLABLE_NUMBER,
+	    /**
+	     * section marker
+	     */
 	    MY_SYLLABLE_SECTION,
+	    /**
+	     * number of entries in enum
+	     */
 	    MY_SYLLABLE_NUM_PARTS;
     }
 
+    /**
+     * Line break status from comparing a pair of characters
+     *
+     */
     public enum MyPairStatus
     {
+    	/**
+    	 * illegal sequence
+    	 */
         MY_PAIR_ILLEGAL,
+        /**
+         * no break
+         */
         MY_PAIR_NO_BREAK,
+        /**
+         * syllable break
+         */
         MY_PAIR_SYL_BREAK,
+        /**
+         * word break
+         */
         MY_PAIR_WORD_BREAK,
+        /**
+         * punctuation break
+         */
         MY_PAIR_PUNCTUATION,
+        /**
+         * needs further context analysis
+         */
         MY_PAIR_CONTEXT,
+        /**
+         * end of line
+         */
         MY_PAIR_EOL;
     }
 
@@ -352,7 +417,11 @@ public class MyanmarParser
     if (i + 1 == text.length) breakType = MyPairStatus.MY_PAIR_EOL;
     return new ClusterProperties(offset, i + 1, breakType);
   }
-    
+    /**
+     * Guess language for given text
+     * @param text
+     * @return language id
+     */
   public int guessLanguage(char [] text)
   {
     int language = LANG_MY;
@@ -604,9 +673,25 @@ public class MyanmarParser
       this.endIndex = end;
       this.breakStatus = breakStatus;
     }
+    /**
+     * 
+     * @return start index of cluster
+     */
     public int getStart() { return startIndex; }
+    /**
+     * 
+     * @return end index of cluster (exclusive)
+     */
     public int getEnd() { return endIndex; }
+    /**
+     * 
+     * @return length of cluster
+     */
     public int length() { return endIndex - startIndex; }
+    /**
+     * 
+     * @return break status
+     */
     public MyPairStatus getBreakStatus() { return breakStatus; }
     public String toString() 
     {

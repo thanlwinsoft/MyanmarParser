@@ -25,8 +25,19 @@
 
 package org.thanlwinsoft.myanmar;
 
+/**
+ * Helper class to deal with Myanmar numbers
+ * @author keith
+ *
+ */
 public class MyanmarNumber
 {
+	/**
+	 * Parse a Myanmar number string into an integer
+	 * @param numString
+	 * @return number as integer
+	 * @throws NumberFormatException
+	 */
   public static int string2Number(String numString) throws NumberFormatException
   {
     int i = numString.length() - 1;
@@ -44,6 +55,11 @@ public class MyanmarNumber
     }
     return number;
   }
+  /**
+   * Convert an integer to a Myanmar number string
+   * @param number
+   * @return number in Myanmar digits
+   */
   public static String number2String(int number)
   {
     StringBuffer myNum = new StringBuffer();
