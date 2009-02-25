@@ -223,7 +223,7 @@ public class MyanmarValidatorTest
         validate("ႁိူဝ်ႉ", "ႁိူဝ်ႉ", Validator.Status.Valid);
     }
     /**
-     * reorder to same as burmese contractions
+     * note order is different to Burmese contractions
      */
     @Test
     public void testValidateShan3()
@@ -239,7 +239,7 @@ public class MyanmarValidatorTest
         validate("ၶေႃး", "ၶေႃး", Validator.Status.Valid);
     }
     /**
-     * 
+     * note order is different to Burmese contractions
      */
     @Test
     public void testValidateShan5()
@@ -248,7 +248,7 @@ public class MyanmarValidatorTest
     } 
 
     /**
-     * reorder to same as burmese contractions
+     * note order is different to Burmese contractions
      */
     @Test
     public void testValidateShan6()
@@ -256,7 +256,7 @@ public class MyanmarValidatorTest
         validate("ဢႂ်ႇ",  "ဢႂ်ႇ", Validator.Status.Valid);
     }
     /**
-     * reorder to same as burmese contractions
+     * note order is different to Burmese contractions
      */
     @Test
     public void testValidateShan7()
