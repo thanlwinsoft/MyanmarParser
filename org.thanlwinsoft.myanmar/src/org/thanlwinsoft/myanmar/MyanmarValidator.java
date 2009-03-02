@@ -412,8 +412,8 @@ public class MyanmarValidator implements Validator
                             	seq = UTN11.VisibleVirama;
                             }
                         }
-                        // Shaw W medial with asat
-                        if (prevSeq == UTN11.Asat && utf16[0] == 0x1082)
+                        // Shan W or Mon H medial with asat
+                        if (prevSeq == UTN11.Asat && (utf16[0] == 0x1082 || utf16[0] == 0x103E))
                         {
                         	// this is invalid, but it can be corrected
                         	if (valid == Status.Valid)

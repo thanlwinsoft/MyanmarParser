@@ -22,6 +22,10 @@ public class MyanmarValidatorTest
     {
         validate(in, expectedOut, MyanmarValidator.Status.Corrected);
     }
+    private void check(String in, Validator.Status expectedStatus)
+    {
+        validate(in, in, expectedStatus);
+    }
     private void validate(String in, String expectedOut, Validator.Status expectedStatus)
     {
         Validator mv = new MyanmarValidator();
@@ -293,7 +297,33 @@ public class MyanmarValidatorTest
     @Test
     public void testValidateMon2()
     {
-        validate("ၝဲာ", "ၝဲာ", Validator.Status.Valid);
+        check("ၝဲာ", Validator.Status.Valid);
+    }
+    /**
+     * Mon medial h, different order to contractions
+     */
+    @Test
+    public void testValidateMon3()
+    {
+        correct("ခဏ်ှ", "ခဏှ်");
     }
     
+    /**
+     * Sgaw Karen
+     */
+    @Test
+    public void testValidateSgaw1()
+    {
+        //correct("လဲၣ့်", "လဲ့ၣ်");
+    	check("လဲၣ့်", Validator.Status.Invalid);
+    }
+    /**
+     * Pwo Karen
+     */
+    @Test
+    public void testValidatePwo()
+    {
+        check("ၥ့ၭ", Validator.Status.Valid);
+    }
+
 }
