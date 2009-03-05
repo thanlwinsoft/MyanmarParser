@@ -23,6 +23,7 @@ public class LineBreakTest extends TestCase
   final String STRING_H = "လံၬၥီၪ့ထဲၩ့ဆၧလၧစယီဟၫ့ကွ့ၭဝ့ၫအခၪ့ထံၭလဘံၪ့လီၫ.";// Pwo Karen
   final String STRING_I = "ဟ့အဒီပုၢ်ဝဲၢ်န့ၣ်";//Sgaw Karen
   final String STRING_J = "ၸႂ်ဢႂ်";
+  final String STRING_K = "ဢူႛꩰ";// Khamti
 
   /** */
   public void test_lb_0()
@@ -659,6 +660,16 @@ public class LineBreakTest extends TestCase
   {
     ClusterProperties cp = myParser.getNextSyllable(STRING_J.toCharArray(), 3);
     assertEquals(cp.toString(), 6, cp.getEnd() );
+    assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_EOL,
+                 cp.getBreakStatus());
+  }
+  /**
+   *     ဢူႛꩰ
+   */
+  public void test_lba_kht_01()
+  {
+    ClusterProperties cp = myParser.getNextSyllable(STRING_K.toCharArray(), 0);
+    assertEquals(cp.toString(), 4, cp.getEnd() );
     assertEquals(cp.toString(), MyanmarParser.MyPairStatus.MY_PAIR_EOL,
                  cp.getBreakStatus());
   }

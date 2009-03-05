@@ -293,10 +293,10 @@ public class MyanmarParser
    		  MySyllablePart.MY_SYLLABLE_NUMBER,//1097;MYANMAR SHAN DIGIT SEVEN;Nd;0;L;;7;7;7;N;;;;;
    		  MySyllablePart.MY_SYLLABLE_NUMBER,//1098;MYANMAR SHAN DIGIT EIGHT;Nd;0;L;;8;8;8;N;;;;;
    		  MySyllablePart.MY_SYLLABLE_NUMBER,//1099;MYANMAR SHAN DIGIT NINE;Nd;0;L;;9;9;9;N;;;;;
-   		  MySyllablePart.MY_SYLLABLE_UNKNOWN,//109A
-   		  MySyllablePart.MY_SYLLABLE_UNKNOWN,//109B
-   		  MySyllablePart.MY_SYLLABLE_UNKNOWN,//109C
-   		  MySyllablePart.MY_SYLLABLE_UNKNOWN,//109D
+   		  MySyllablePart.MY_SYLLABLE_TONE,//109A
+   		  MySyllablePart.MY_SYLLABLE_TONE,//109B
+   		  MySyllablePart.MY_SYLLABLE_TONE,//109C
+   		  MySyllablePart.MY_SYLLABLE_TONE,//109D??
    		  MySyllablePart.MY_SYLLABLE_CONSONANT,//109E;MYANMAR SYMBOL SHAN ONE;So;0;L;;;;;N;;;;;
    		  MySyllablePart.MY_SYLLABLE_CONSONANT//109F;MYANMAR SYMBOL SHAN EXCLAMATION;So;0;L;;;;;N;;;;;
    	  };
@@ -623,9 +623,15 @@ public class MyanmarParser
   {
 	  if (mmChar < 0x1000 || mmChar > 0x109F)
 	  {
+		  if (mmChar >= 0xAA60 && mmChar < 0xAA76)
+		  {
+			  if (mmChar == 0xAA70)
+				  return MySyllablePart.MY_SYLLABLE_TONE;
+			  return MySyllablePart.MY_SYLLABLE_CONSONANT;
+		  }
 		  return MySyllablePart.MY_SYLLABLE_UNKNOWN;
 	  }
-	return CHAR_PART[mmChar - 0x1000];
+	  return CHAR_PART[mmChar - 0x1000];
   }
   /**
    * Tests whether the character is exclusive to text using the Myanmar script.
@@ -636,8 +642,10 @@ public class MyanmarParser
    */
   public boolean isMyanmarCharacter(char c)
   {
-	  if (c < 0x1000 || c > 0x109f)
-		  return false;
+	  if (c >= 0x1000 && c <= 0x109f || c >= 0xaa60 && c <= 0xaa7f)
+	  {
+		  return true;
+	  }
 	  return true;
   }
   /**

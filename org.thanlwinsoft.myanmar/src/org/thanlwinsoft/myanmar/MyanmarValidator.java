@@ -53,7 +53,7 @@ public class MyanmarValidator implements Validator
 		MedialYR(5), MedialW(6), MedialH(7), MonAsat(8), EVowel(9), ShanE(10),
 		UVowel(11), LVowel(12), OtherVowel(13), ShanVowel(14), AVowel(15), 
 		Anusvara(16), PwoTone(17), 
-		LowerDot(18), MonH(19), VisibleVirama(20), Visarga(21);
+		LowerDot(18), MonH(19), VisibleVirama(20), Visarga(21),Reduplicator(22);
 
         int mSequenceId;
 
@@ -73,6 +73,10 @@ public class MyanmarValidator implements Validator
                 return Consonant;
             if (c >= 0x1075 && c < 0x1082)
                 return Consonant;
+			if (c >= 0xAA60 && c < 0xAA70)
+				return Consonant;
+			if (c >= 0xAA71 && c < 0xAA77)
+				return Consonant;
 			if (c >= 0x1040 && c < 0x104A)
                 return Number;
 			if (c >= 0x1090 && c < 0x109A)
@@ -84,6 +88,7 @@ public class MyanmarValidator implements Validator
             case 0x1065:
             case 0x1066:
             case 0x108E:
+            case 0x109F: // is this really a symbol, not if it takes visarga?
             case 0x25CC:// special case for dotted circle
                 return Consonant;
             case 0x1022:
@@ -101,6 +106,7 @@ public class MyanmarValidator implements Validator
             case 0x104D:
             case 0x104E:
             case 0x104F:
+            case 0x109E:
                 return Sign;
             case 0x103A:
                 return Asat;// May also be Mon Asat or Visible Virama
@@ -162,10 +168,19 @@ public class MyanmarValidator implements Validator
             //    return LowerDot;
             case 0x1038:
             case 0x1087:
+            case 0x1088:
+            case 0x1089:
+            case 0x108A:
+            case 0x108B:
+            case 0x108C:
             case 0x108D:
             case 0x108F:
+            case 0x109A:
+            case 0x109B:
+            case 0x109C:
                 return Visarga;
-
+            case 0xAA70:
+            	return Reduplicator;
             }
             return Unknown;
         }
@@ -256,7 +271,7 @@ public class MyanmarValidator implements Validator
 
     public Status validate(BufferedReader r, BufferedWriter w)
     {
-        Deque<Character> utn11Queue = new ArrayDeque<Character>(UTN11.Visarga
+        Deque<Character> utn11Queue = new ArrayDeque<Character>(UTN11.Reduplicator
                 .getSequenceId());
         Status valid = Status.Valid;
 		boolean badPrefix = false;
@@ -598,9 +613,20 @@ public class MyanmarValidator implements Validator
                         {
                         	if (valid == Status.Valid)
                                 valid = Status.Corrected;
-                        	logInfo("Swallowed duplicate " + utf16[0] + 
+                        	logFine("Swallowed duplicate " + utf16[0] + 
                         			": ", utn11Queue);
                         	seq = UTN11.fromCode(utn11Queue.peek());
+                        	continue;
+                        }
+                        if (seq == UTN11.Visarga && prevSeq == UTN11.Reduplicator)
+                        {
+                        	if (valid == Status.Valid)
+                        		valid = Status.Corrected;
+                        	char lv = utn11Queue.pop();
+                            utn11Queue.push(utf16[0]);
+                            utn11Queue.push(lv);
+                        	logFine("Corrected Reduplication Visarga", utn11Queue);
+                        	seq = prevSeq;
                         	continue;
                         }
                         valid = Status.Invalid;
