@@ -342,6 +342,21 @@ public class MyanmarValidatorTest
     	
     	check("ꩫဲၢႈꩰ၊ ", Validator.Status.Valid);
     }
+    /**
+     * Khamti
+     */
+    @Test
+    public void testValidateKhamti3()
+    {
+    	correct("လံု", "လုံ");
+    }
+    /**
+     * Khamti
+     */
+    @Test
+    public void testValidateKhamti4()
+    {
+    	check("ꩢႅ် ", Validator.Status.Invalid);
+    }
     
-
 }

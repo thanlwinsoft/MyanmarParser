@@ -452,6 +452,21 @@ public class MyanmarValidator implements Validator
                         {
                         	seq = UTN11.Anusvara;
                         }
+                        // incorrect uvowel
+                        if ((utn11Queue.peek() == 0x1032 || utn11Queue.peek() == 0x1036)
+                        	&& seq == UTN11.LVowel)
+                        {
+                        	// correct by swapping
+                        	char c = utn11Queue.pop();
+                        	utn11Queue.push(utf16[0]);
+                        	utn11Queue.push(c);
+                        	seq = UTN11.Anusvara;
+                        	if (valid == Status.Valid)
+                                valid = Status.Corrected;
+						    logFine("Corrected anusvara lower vowel at: ", 
+						            utn11Queue);
+                        	continue;
+                        }
                         // Lower Dot
                         if (utf16[0] == 0x1037 &&
                         	prevSeq.getSequenceId() >= UTN11.OtherVowel.getSequenceId())
@@ -462,6 +477,12 @@ public class MyanmarValidator implements Validator
                         if (utf16[0] == 0x103E && prevSeq == UTN11.AVowel)
                         {
                         	seq = UTN11.MonH;
+                        }
+                        // UVowel Asat is a common typo, but technically allowed
+                        if (prevSeq == UTN11.UVowel && seq == UTN11.VisibleVirama)
+                        {
+                        	logWarning("Upper vowel, asat", utn11Queue);
+                        	valid = Status.Invalid;
                         }
                         // Is it the next in the sequence within the syllable
                         // structure?
