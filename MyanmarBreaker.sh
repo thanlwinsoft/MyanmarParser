@@ -11,6 +11,6 @@ else
 		mmParserBase=$mmParserBase/org.thanlwinsoft.myanmar;
 	fi
 fi
-echo $mmParserBase;
-java -cp $mmParserBase/org.thanlwinsoft.myanmar.jar org.thanlwinsoft.myanmar.MyanmarBreaker $@
+#echo $mmParserBase;
+java -cp $mmParserBase/org.thanlwinsoft.myanmar.jar org.thanlwinsoft.myanmar.MyanmarBreaker "$@"
 
