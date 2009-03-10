@@ -174,7 +174,7 @@ public class MyanmarBreaker
 		BufferedWriter bw = null;
 		BufferedReader br = null;
 		BufferedReader dict = null;
-		if (args.length < 2)
+		if (args.length < 3)
 		{
 			System.out.println("Usage: MyanmarBreaker dictionary.txt input.txt brokenOutput.txt [spaceChar]");
 			System.out.println("\tDefault space character = ZWSP");

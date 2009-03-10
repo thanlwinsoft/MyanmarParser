@@ -305,7 +305,7 @@ public class MyanmarParser
 		     // first char = row, second char = column
     		 // 0=illegal, 1=no, 2=yes, 3=yes-line, 4=punctuation, 5=context,
     		 //-  C  M  V  T 39 3A  N  S
-    		 { 2, 3, 1, 1, 1, 1, 1, 1, 1 },//-
+    		 { 1, 3, 1, 1, 1, 1, 1, 1, 1 },//-
     		 { 3, 5, 1, 1, 1, 1, 1, 2, 4 },//C
     		 { 1, 5, 1, 1, 1, 0, 1, 2, 4 },//M
     		 { 3, 5, 0, 1, 1, 0, 1, 2, 4 },//V
@@ -611,6 +611,8 @@ public class MyanmarParser
   */
   protected static MyPairStatus getBreakStatus(char before, char after)
   {
+	  if (before == 0x2060 || after == 0x2060)
+		  return MyPairStatus.MY_PAIR_NO_BREAK;
 	  return MyPairStatus.values()[PAIR_TABLE[getCharClass(before).ordinal()]
 	                                         [getCharClass(after).ordinal()]];
   }

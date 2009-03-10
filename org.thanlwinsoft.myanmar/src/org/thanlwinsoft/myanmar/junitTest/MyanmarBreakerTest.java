@@ -91,4 +91,14 @@ public class MyanmarBreakerTest
 	{
 		breakTest("အောင်မြင်\nအောင်\nမြင်\nမှု\nတို့\nသည်","အောင်မြင်မှုတို့သည် ","အောင်မြင်|မှု|တို့|သည် \n");
 	}
+	
+	/**
+	 * test use of Word Joiner U+2060
+	 */
+	@Test
+	public void testBreak4()
+	{
+		breakTest("","ပ⁠ရို⁠တိန်း","ပ⁠ရို⁠တိန်း\n");
+	}
 }
+
