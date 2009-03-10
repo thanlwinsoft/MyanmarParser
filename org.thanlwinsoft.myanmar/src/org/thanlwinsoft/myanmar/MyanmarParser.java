@@ -18,7 +18,6 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA  02111-1307  USA
  */
-
 package org.thanlwinsoft.myanmar;
 
 import java.util.ArrayList;
@@ -303,6 +302,7 @@ public class MyanmarParser
 
 	  final static int [] [] PAIR_TABLE = new int [][]
       {
+		     // first char = row, second char = column
     		 // 0=illegal, 1=no, 2=yes, 3=yes-line, 4=punctuation, 5=context,
     		 //-  C  M  V  T 39 3A  N  S
     		 { 2, 3, 1, 1, 1, 1, 1, 1, 1 },//-
@@ -708,9 +708,11 @@ public class MyanmarParser
       if (breakStatus == MyPairStatus.MY_PAIR_NO_BREAK)
           bs = "NO";
       else if (breakStatus == MyPairStatus.MY_PAIR_SYL_BREAK)
-          bs = "WS";
+          bs = "SY";
       else if (breakStatus == MyPairStatus.MY_PAIR_WORD_BREAK)
-          bs = "WW";
+          bs = "WB";
+      else if (breakStatus == MyPairStatus.MY_PAIR_PUNCTUATION)
+          bs = "PU";
       else if (breakStatus == MyPairStatus.MY_PAIR_CONTEXT)
           bs = "Co";
       else if (breakStatus == MyPairStatus.MY_PAIR_ILLEGAL)
