@@ -47,12 +47,14 @@
 	<target name="install" description="install to /usr/local/bin (run as root)">
 		<copy file="../MyanmarAnalysis.sh" tofile="${installBase}/bin/myanmar-analysis" overwrite="true"/>
 		<copy file="../MyanmarValidator.sh" tofile="${installBase}/bin/myanmar-validator" overwrite="true"/>
+		<copy file="../MyanmarBreaker.sh" tofile="${installBase}/bin/myanmar-breaker" overwrite="true"/>
 		<mkdir dir="${installBase}/share/myanmar-parser"/>
 		<copy file="org.thanlwinsoft.myanmar.jar" todir="${installBase}/share/myanmar-parser" overwrite="true"/>
 		<exec executable="chmod">
 			<arg value="755"/>
 			<arg value="${installBase}/bin/myanmar-analysis"/>
 			<arg value="${installBase}/bin/myanmar-validator"/>
+			<arg value="${installBase}/bin/myanmar-breaker"/>
 		</exec>
 	</target>
 </project>

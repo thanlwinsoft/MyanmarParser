@@ -12,5 +12,5 @@ else
 	fi
 fi
 echo $mmParserBase;
-java -cp $mmParserBase/org.thanlwinsoft.myanmar.jar org.thanlwinsoft.myanmar.MyanmarValidator $@
+java -cp $mmParserBase/org.thanlwinsoft.myanmar.jar org.thanlwinsoft.myanmar.MyanmarBreaker $@
 
