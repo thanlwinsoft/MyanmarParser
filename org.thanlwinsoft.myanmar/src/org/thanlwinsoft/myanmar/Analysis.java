@@ -45,7 +45,7 @@ public class Analysis
             .getCanonicalName());
     
     private int mMaxContext = 1;
-    private Map<Syllable, Integer> mSyllables = new TreeMap<Syllable, Integer> ();
+    private Map<AnalysisSyllable, Integer> mSyllables = new TreeMap<AnalysisSyllable, Integer> ();
     private Validator mValidator = null;
     private MyanmarParser mParser = new MyanmarParser();
     
@@ -151,10 +151,10 @@ public class Analysis
      */
     public void writeResults(BufferedWriter bw, boolean outputStats) throws IOException
     {
-        Iterator <Syllable> i = mSyllables.keySet().iterator();
+        Iterator <AnalysisSyllable> i = mSyllables.keySet().iterator();
         while (i.hasNext())
         {
-            Syllable s = i.next();
+        	AnalysisSyllable s = i.next();
             bw.write(s.toString());
             if (outputStats)
             {
@@ -164,80 +164,24 @@ public class Analysis
             bw.newLine();
         }
     }
-
     /**
-     * Class to hold syllable information
-     * @author keith
-     *
+     * 
+     * @param s
+     * @return count
      */
-    public class Syllable implements Comparable<Syllable>
+    public int getSyllableCount(AnalysisSyllable s)
     {
-        private String mText;
-        private int mCount = 1;
-        private ArrayDeque<String> mFollowing;
-        /**
-         * Syllable constructor
-         * @param s - the syllable
-         * @param following syllables
-         */
-        public Syllable(String s, ArrayDeque<String> following)
-        {
-            mText = s;
-            mFollowing = following;
-        }
-
-        @Override
-        public int compareTo(Syllable o)
-        {
-            int r = mText.compareTo(o.mText);
-            Iterator<String> i = mFollowing.iterator();
-            Iterator<String> j = o.mFollowing.iterator();
-            while (r == 0)
-            {
-                if (i.hasNext())
-                    if (j.hasNext())
-                    {
-                        r = i.next().compareTo(j.next());
-                    }
-                    else
-                    {
-                        r = 1;
-                        break;
-                    }
-                else if (j.hasNext())
-                {
-                    r = -1;
-                    break;
-                }
-                else 
-                {
-                    r = 0;
-                    break;
-                }
-            }
-            return r;
-        }
-        /**
-         * increment count of this syllables occurances
-         */
-        public void add() { mCount++; }
-        /**
-         * 
-         * @return number of occurances of syllable
-         */
-        public int getCount() { return mCount; }
-
-        @Override
-        public String toString()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.append(mText);
-            Iterator <String> i = mFollowing.iterator();
-            while (i.hasNext())
-                sb.append(i.next());
-            return sb.toString();
-        }
-        
+    	if (mSyllables.containsKey(s))
+    		return mSyllables.get(s);
+    	return 0;
+    }
+    /**
+     * 
+     * @return syllable to syllable count map
+     */
+    public final Map<AnalysisSyllable,Integer> getSyllables()
+    {
+    	return mSyllables;
     }
     /**
      * Constructor
@@ -284,19 +228,20 @@ public class Analysis
 	                    if (mParser.isMyanmarCharacter(syllableText.charAt(0)) == false ||
 	                        cp.getBreakStatus() == MyanmarParser.MyPairStatus.MY_PAIR_WORD_BREAK)
 	                    {
+	                    	syllables.addLast(syllableText);
 	                        processSyllables(syllables);
 	                        syllables.clear();
 	                    }
 	                    else
 	                    {
-	                        syllables.push(syllableText);
+	                        syllables.addLast(syllableText);
 	                    }
 	                    offset = cp.getEnd();
 	                    cp = mParser.getNextSyllable(validated, offset);
 	                    syllableText = validated.substring(cp.getStart(), cp.getEnd());
 	                }
 	                if (mParser.isMyanmarCharacter(syllableText.charAt(0)))
-	                    syllables.push(syllableText);
+	                    syllables.addLast(syllableText);
 	                processSyllables(syllables);
                 }
             }
@@ -311,11 +256,15 @@ public class Analysis
     {
         while (syllables.size() > 0)
         {
-            String s = syllables.pop();
+            String s = syllables.removeFirst();
             ArrayDeque<String> context = syllables.clone();
             while (context.size() > mMaxContext)
                 context.removeLast();
-            Syllable syl = new Syllable(s, context);
+            if (!mParser.isMyanmarCharacter(s.charAt(0)))
+            {
+            	continue;
+            }
+            AnalysisSyllable syl = new AnalysisSyllable(s, context);
             if (mSyllables.containsKey(syl))
             {
                 int count = mSyllables.get(syl);

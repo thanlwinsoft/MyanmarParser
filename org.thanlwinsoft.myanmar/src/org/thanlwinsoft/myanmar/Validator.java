@@ -53,4 +53,25 @@ public interface Validator
 	 * @return validation status
 	 */
 	public Status validate(BufferedReader r, BufferedWriter w);
+	
+	/**
+     * 
+     * @return line number
+     */
+    public long getLineNumber();
+    /**
+     * 
+     * @return column index
+     */
+    public long getColumn();
+
+    /**
+     * number of errors found since reset
+     * @return error count
+     */
+    public long getErrorCount();
+    /**
+     * reset line, col number
+     */
+    public void reset();
 }

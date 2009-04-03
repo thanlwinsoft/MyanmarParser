@@ -307,12 +307,12 @@ public class MyanmarParser
     		 //-  C  M  V  T 39 3A  N  S
     		 { 1, 3, 1, 1, 1, 1, 1, 1, 1 },//-
     		 { 3, 5, 1, 1, 1, 1, 1, 2, 4 },//C
-    		 { 1, 5, 1, 1, 1, 0, 1, 2, 4 },//M
+    		 { 3, 5, 1, 1, 1, 0, 1, 2, 4 },//M
     		 { 3, 5, 0, 1, 1, 0, 1, 2, 4 },//V
     		 { 3, 2, 0, 1, 1, 0, 0, 2, 4 },//T
     		 { 3, 1, 0, 0, 0, 0, 0, 0, 0 },//1039
     		 { 3, 2, 1, 1, 1, 1, 0, 2, 4 },//103A
-    		 { 1, 2, 1, 1, 1, 0, 0, 1, 4 },//N
+    		 { 3, 2, 1, 1, 1, 0, 0, 1, 4 },//N
     		 { 3, 2, 0, 0, 0, 0, 0, 2, 0 }//S
       };
 
@@ -595,7 +595,7 @@ public class MyanmarParser
     }
     else if (text[2] == 0x103A && langHint == LANG_MY)
     {
-      // Karen (and also some load words in Myanmar) can have a starting 103A
+      // Karen (and also some loan words in Myanmar) can have a starting 103A
       return MyPairStatus.MY_PAIR_NO_BREAK;
     }
     else
@@ -644,11 +644,11 @@ public class MyanmarParser
    */
   public boolean isMyanmarCharacter(char c)
   {
-	  if (c >= 0x1000 && c <= 0x109f || c >= 0xaa60 && c <= 0xaa7f)
+	  if ((c >= 0x1000 && c <= 0x109f) || (c >= 0xaa60 && c <= 0xaa7f))
 	  {
 		  return true;
 	  }
-	  return true;
+	  return false;
   }
   /**
    * Tests whether the character may occur within Myanmar text

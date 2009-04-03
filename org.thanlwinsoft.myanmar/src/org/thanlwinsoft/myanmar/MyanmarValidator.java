@@ -196,6 +196,7 @@ public class MyanmarValidator implements Validator
     private long mTabWidth = 4;
 	private String mRef;
     private static final String sEOL = System.getProperty("line.separator");
+    private long mErrorCount = 0;
 
     /**
      * constructor
@@ -220,6 +221,7 @@ public class MyanmarValidator implements Validator
     {
         mLine = 1;
         mColumn = 0;
+        mErrorCount = 0;
     }
     /**
      * 
@@ -236,6 +238,15 @@ public class MyanmarValidator implements Validator
     public long getColumn()
     {
         return mColumn;
+    }
+
+    /**
+     * number of errors found since reset
+     * @return error count
+     */
+    public long getErrorCount()
+    {
+    	return mErrorCount;
     }
 	/**
 	 * set a reference to assist interpretation of logs
@@ -335,6 +346,7 @@ public class MyanmarValidator implements Validator
 									logWarning("Unexpected sequence at: ", utn11Queue);
 									if (valid == Status.Valid)
 		                                valid = Status.Invalid;
+									mErrorCount++;
 								}
 							}
                             continue;
@@ -356,6 +368,7 @@ public class MyanmarValidator implements Validator
 								utn11Queue.push('\u101D');
 								if (valid == Status.Valid)
 	                                valid = Status.Corrected;
+								mErrorCount++;
 							}
 							if (utn11Queue.peek() == '\u1044' && utf16[0] == '\u1004')
 							{
@@ -381,6 +394,7 @@ public class MyanmarValidator implements Validator
                                 utn11Queue.push(utf16[0]);
                                 if (valid == Status.Valid)
                                     valid = Status.Corrected;
+                                mErrorCount++;
                                 logFine("Corrected U+1025 at: ", utn11Queue);
                                 continue;
                             }
@@ -391,6 +405,7 @@ public class MyanmarValidator implements Validator
                                 logFine("U+1025 U+102E -> U+1026 ", utn11Queue);
                                 if (valid == Status.Valid)
                                     valid = Status.Corrected;
+                                mErrorCount++;
                                 continue;
                             }
 						}
@@ -407,6 +422,7 @@ public class MyanmarValidator implements Validator
                                 utn11Queue.push(lv);
                                 if (valid == Status.Valid)
                                     valid = Status.Corrected;
+                                mErrorCount++;
                                 logFine("Corrected U+102F U+103A: ", utn11Queue);
                                 continue;
                             }
@@ -416,6 +432,7 @@ public class MyanmarValidator implements Validator
                                 logFine("Corrected duplicate U+103A", utn11Queue);
                                 if (valid == Status.Valid)
                                     valid = Status.Corrected;
+                                mErrorCount++;
                                 continue;
                             }
                             if (prevSeq == UTN11.MedialH)
@@ -433,6 +450,7 @@ public class MyanmarValidator implements Validator
                         	// this is invalid, but it can be corrected
                         	if (valid == Status.Valid)
                                 valid = Status.Corrected;
+                        	mErrorCount++;
                             char asat = utn11Queue.pop();
                             utn11Queue.push(utf16[0]);
                             utn11Queue.push(asat);
@@ -463,6 +481,7 @@ public class MyanmarValidator implements Validator
                         	seq = UTN11.Anusvara;
                         	if (valid == Status.Valid)
                                 valid = Status.Corrected;
+                        	mErrorCount++;
 						    logFine("Corrected anusvara lower vowel at: ", 
 						            utn11Queue);
                         	continue;
@@ -483,6 +502,7 @@ public class MyanmarValidator implements Validator
                         {
                         	logWarning("Upper vowel, asat", utn11Queue);
                         	valid = Status.Invalid;
+                        	mErrorCount++;
                         }
                         // Is it the next in the sequence within the syllable
                         // structure?
@@ -514,6 +534,7 @@ public class MyanmarValidator implements Validator
     								    utn11Queue.addLast(utf16[0]);
     								    if (valid == Status.Valid)
     		                                valid = Status.Corrected;
+    								    mErrorCount++;
     								    logFine("Corrected prefix sequence at: ", 
     								            utn11Queue);
     									badPrefix = false;
@@ -537,6 +558,7 @@ public class MyanmarValidator implements Validator
                         {
                             if (valid == Status.Valid)
                                 valid = Status.Corrected;
+                            mErrorCount++;
                             utn11Queue.addLast('\u101D');
                             logFine("Changed 0 to wa: ", utn11Queue);
                             badPrefix = false;
@@ -563,6 +585,7 @@ public class MyanmarValidator implements Validator
                             utn11Queue.push(eVowel);
                             if (valid == Status.Valid)
                                 valid = Status.Corrected;
+                            mErrorCount++;
                             logFine("Corrected e/medial ra: ", utn11Queue);
                             seq = UTN11.fromCode(utn11Queue.peek());
                             continue;
@@ -579,6 +602,7 @@ public class MyanmarValidator implements Validator
 	                            utn11Queue.push(eVowel);
 	                            if (valid == Status.Valid)
 	                                valid = Status.Corrected;
+	                            mErrorCount++;
 	                            logFine("Corrected e/medial: ",utn11Queue);
 	                            seq = UTN11.fromCode(utn11Queue.peek());
 	                            continue;
@@ -597,6 +621,7 @@ public class MyanmarValidator implements Validator
                             utn11Queue.push(lv);
                             if (valid == Status.Valid)
                                 valid = Status.Corrected;
+                            mErrorCount++;
                             logFine("Corrected at lower/upper vowel order: ", 
                                     utn11Queue);
                             seq = UTN11.fromCode(utn11Queue.peek());
@@ -611,6 +636,7 @@ public class MyanmarValidator implements Validator
                             utn11Queue.push(lv);
                             if (valid == Status.Valid)
                                 valid = Status.Corrected;
+                            mErrorCount++;
                             logFine("Corrected contraction order: ", 
                                     utn11Queue);
                             seq = UTN11.fromCode(utn11Queue.peek());
@@ -625,6 +651,7 @@ public class MyanmarValidator implements Validator
                             utn11Queue.push(lv);
                             if (valid == Status.Valid)
                                 valid = Status.Corrected;
+                            mErrorCount++;
                             logFine("Corrected medial/upper or shan vowel order: ", 
                                     utn11Queue);
                             seq = UTN11.fromCode(utn11Queue.peek());
@@ -634,6 +661,7 @@ public class MyanmarValidator implements Validator
                         {
                         	if (valid == Status.Valid)
                                 valid = Status.Corrected;
+                        	mErrorCount++;
                         	logFine("Swallowed duplicate " + utf16[0] + 
                         			": ", utn11Queue);
                         	seq = UTN11.fromCode(utn11Queue.peek());
@@ -643,6 +671,7 @@ public class MyanmarValidator implements Validator
                         {
                         	if (valid == Status.Valid)
                         		valid = Status.Corrected;
+                        	mErrorCount++;
                         	char lv = utn11Queue.pop();
                             utn11Queue.push(utf16[0]);
                             utn11Queue.push(lv);
@@ -651,6 +680,7 @@ public class MyanmarValidator implements Validator
                         	continue;
                         }
                         valid = Status.Invalid;
+                        mErrorCount++;
                         utn11Queue.push(utf16[0]);
                         logWarning("Invalid sequence at: ", utn11Queue);
                     }
@@ -686,6 +716,7 @@ public class MyanmarValidator implements Validator
                     + dumpQueue(utn11Queue));
             if (status == Status.Valid)
                 status = Status.Corrected;
+            mErrorCount++;
         }
         // correct ၄င်း
         if (utn11Queue.size() == 4 && utn11Queue.peekLast() == '\u1044' && 
@@ -697,6 +728,7 @@ public class MyanmarValidator implements Validator
                 w.write('\u104E');
                 if (status == Status.Valid)
                     status = Status.Corrected;
+                mErrorCount++;
                 logFine("Corrected ၄င်း", utn11Queue);
             }
             else w.write(c);
