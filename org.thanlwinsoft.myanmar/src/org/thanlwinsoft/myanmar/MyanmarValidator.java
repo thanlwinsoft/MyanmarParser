@@ -151,13 +151,13 @@ public class MyanmarValidator implements Validator
             case 0x102C:
             //case 0x1062:
             case 0x1063:
-            case 0x1064:
             case 0x1067:
             case 0x1068:
             case 0x1083:
                 return AVowel;
             //case 0x1036:
             //    return Anusvara;
+            case 0x1064:// actually Sgaw
             case 0x1069:
             case 0x106A:
             case 0x106B:
