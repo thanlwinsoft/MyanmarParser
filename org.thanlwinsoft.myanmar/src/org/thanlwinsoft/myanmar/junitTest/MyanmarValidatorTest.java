@@ -214,6 +214,30 @@ public class MyanmarValidatorTest
      * 
      */
     @Test
+    public void testValidate20()
+    {
+        validate("ကင့်","ကင့်", Validator.Status.Valid);
+    }
+    /**
+     * 
+     */
+    @Test
+    public void testValidate21()
+    {
+        validate("ကော်","ကော်", Validator.Status.Valid);
+    }
+    /**
+     * 
+     */
+    @Test
+    public void testValidate22()
+    {
+        validate("ခေါ်","ခေါ်", Validator.Status.Valid);
+    }
+    /**
+     * 
+     */
+    @Test
     public void testValidateShan1()
     {
         validate("ဢွႆႇ", "ဢွႆႇ", Validator.Status.Valid);
@@ -307,6 +331,14 @@ public class MyanmarValidatorTest
     {
         correct("ခဏ်ှ", "ခဏှ်");
     }
+    /**
+     * Mon medial h, different order to contractions
+     */
+    @Test
+    public void testValidateMon4()
+    {
+        check("အောှ်", Validator.Status.Valid);
+    }
     
     /**
      * Sgaw Karen
@@ -318,6 +350,31 @@ public class MyanmarValidatorTest
     	check("လဲၣ့်", Validator.Status.Invalid);
     }
     /**
+     * Sgaw Karen
+     */
+    @Test
+    public void testValidateSgaw2()
+    {
+        check("ကၢၢ်", Validator.Status.Valid);
+    }
+    /**
+     * Sgaw Karen
+     */
+    @Test
+    public void testValidateSgaw3()
+    {
+        check("အၢ်", Validator.Status.Valid);
+    }
+    /**
+     * Sgaw Karen
+     */
+    @Test
+    public void testValidateSgaw4()
+    {
+        check("ဧူၢ", Validator.Status.Valid);
+    }
+    
+    /**
      * Pwo Karen
      */
     @Test
@@ -325,6 +382,8 @@ public class MyanmarValidatorTest
     {
         check("ၥ့ၭ", Validator.Status.Valid);
     }
+    
+    
     /**
      * Khamti
      */

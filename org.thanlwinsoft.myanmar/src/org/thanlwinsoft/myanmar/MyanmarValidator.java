@@ -51,7 +51,7 @@ public class MyanmarValidator implements Validator
     {
         Unknown(0), Number(1), Sign(0), Consonant(2), Asat(3), Stacker(4), 
 		MedialYR(5), MedialW(6), MedialH(7), MonAsat(8), EVowel(9), ShanE(10),
-		UVowel(11), LVowel(12), OtherVowel(13), ShanVowel(14), AVowel(15), 
+		UVowel(11), LVowel(12), KarenVowel(13), ShanVowel(14), AVowel(15), 
 		Anusvara(16), PwoTone(17), 
 		LowerDot(18), MonH(19), VisibleVirama(20), Visarga(21),Reduplicator(22);
 
@@ -65,7 +65,7 @@ public class MyanmarValidator implements Validator
         static UTN11 fromCode(char c)
         {
             // deal with the ranges
-            if (c >= 0x1000 && c < 0x1024)
+            if (c >= 0x1000 && c < 0x102B)
                 return Consonant;
             if (c >= 0x105A && c < 0x105E)
                 return Consonant;
@@ -84,13 +84,15 @@ public class MyanmarValidator implements Validator
             switch (c)
             {
             case 0x103F:
+            case 0x104E:
             case 0x1061:
             case 0x1065:
             case 0x1066:
             case 0x108E:
-            case 0x109F: // is this really a symbol, not if it takes visarga?
+            //case 0x109F: // is this really a symbol, not if it takes visarga?
             case 0x25CC:// special case for dotted circle
                 return Consonant;
+                /*
             case 0x1022:
             case 0x1023:
             case 0x1024:
@@ -99,14 +101,14 @@ public class MyanmarValidator implements Validator
             case 0x1027:
             case 0x1028:
             case 0x1029:
-            case 0x102A:
+            case 0x102A:*/
             case 0x104A:
             case 0x104B:
             case 0x104C:
             case 0x104D:
-            case 0x104E:
             case 0x104F:
             case 0x109E:
+            case 0x109F:
                 return Sign;
             case 0x103A:
                 return Asat;// May also be Mon Asat or Visible Virama
@@ -138,13 +140,14 @@ public class MyanmarValidator implements Validator
             case 0x1073:
             case 0x1074:
             case 0x1085:
+            case 0x109D:
                 return UVowel;// may also be Anusvara for 1036,1032
             case 0x102F:
             case 0x1030:
                 return LVowel;
             case 0x1062:
             case 0x1037:
-            	return OtherVowel;// or lower dot
+            	return KarenVowel;// or lower dot
             case 0x1086:
             	return ShanVowel;
             case 0x102B:
@@ -156,6 +159,7 @@ public class MyanmarValidator implements Validator
             case 0x1083:
                 return AVowel;
             //case 0x1036:
+            //case 0x1032:
             //    return Anusvara;
             case 0x1064:// actually Sgaw
             case 0x1069:
@@ -166,6 +170,10 @@ public class MyanmarValidator implements Validator
             	return PwoTone;
             //case 0x1037:
             //    return LowerDot;
+            // case 0x103E:
+            //    return MonH;
+            // case 103A:
+            //    return VisibleVirama;
             case 0x1038:
             case 0x1087:
             case 0x1088:
@@ -435,11 +443,16 @@ public class MyanmarValidator implements Validator
                                 mErrorCount++;
                                 continue;
                             }
-                            if (prevSeq == UTN11.MedialH)
+                            if ((prevSeq == UTN11.MedialH && utn11Queue.peek() == '\u103E') 
+                                || utn11Queue.peek() == '\u1082')
                             {
                             	seq = UTN11.MonAsat;
                             }
-                            else
+                            else if (prevSeq == UTN11.KarenVowel)
+                            {
+                            	seq = UTN11.VisibleVirama;
+                            }
+                            else if (prevSeq == UTN11.AVowel || prevSeq == UTN11.PwoTone || prevSeq == UTN11.MonH)
                             {
                             	seq = UTN11.VisibleVirama;
                             }
@@ -455,14 +468,38 @@ public class MyanmarValidator implements Validator
                             utn11Queue.push(utf16[0]);
                             utn11Queue.push(asat);
                             logFine("Changed order of asat/shan wa: ", utn11Queue);
-                        	seq = UTN11.VisibleVirama;
+                        	seq = UTN11.MonAsat;
                         	continue;
                         }
                         // Shan E
                         if (utf16[0] == 0x1031 && prevSeq == UTN11.EVowel)
                         	seq = UTN11.ShanE;
+                        // Karen Vowel
+                        if (seq == UTN11.KarenVowel && prevSeq == UTN11.LVowel)
+                        {
+                        	if (utf16[0] == 0x1037)
+                        	{
+                        		seq = UTN11.LowerDot;
+                        	}
+                        	else if (utf16[0] == 0x1062)
+                        	{
+                        		seq = UTN11.AVowel;
+                        	}
+                        	else
+                        	{
+                        		valid = Status.Invalid;
+                        		mErrorCount++;
+                        		utn11Queue.push(utf16[0]);
+                        		logWarning("Unexpected Karen Vowel at: ", utn11Queue);
+                        		continue;
+                        	}
+                        }
+                        if (utf16[0] == 0x1037 && (prevSeq == UTN11.Anusvara))
+                        {
+                        	seq = UTN11.LowerDot;
+                        }
                         // second 1062
-                        if (utf16[0] == 0x1062 && prevSeq == UTN11.OtherVowel)
+                        if (utf16[0] == 0x1062 && prevSeq == UTN11.KarenVowel)
                         	seq = UTN11.AVowel;
                         // Anusvara
                         if ((utf16[0] == 0x1032 || utf16[0] == 0x1036) &&
@@ -487,13 +524,15 @@ public class MyanmarValidator implements Validator
                         	continue;
                         }
                         // Lower Dot
-                        if (utf16[0] == 0x1037 &&
-                        	prevSeq.getSequenceId() >= UTN11.OtherVowel.getSequenceId())
+                        if (utf16[0] == 0x1037 && (prevSeq == UTN11.LVowel ||
+                        	prevSeq == UTN11.AVowel || prevSeq == UTN11.PwoTone))
+//                        	prevSeq.getSequenceId() >= UTN11.KarenVowel.getSequenceId())
                         {
                         	seq = UTN11.LowerDot;
                         }
                         // Mon Ha
-                        if (utf16[0] == 0x103E && prevSeq == UTN11.AVowel)
+                        if (utf16[0] == 0x103E && utn11Queue.peek() == '\u102C')
+                        //prevSeq == UTN11.AVowel)
                         {
                         	seq = UTN11.MonH;
                         }
@@ -503,6 +542,16 @@ public class MyanmarValidator implements Validator
                         	logWarning("Upper vowel, asat", utn11Queue);
                         	valid = Status.Invalid;
                         	mErrorCount++;
+                        }
+                        if (seq == UTN11.VisibleVirama && (prevSeq != UTN11.AVowel &&
+                        	prevSeq != UTN11.PwoTone && prevSeq != UTN11.KarenVowel &&
+                        	prevSeq != UTN11.LowerDot && prevSeq != UTN11.MonH))
+                        {
+                        	logWarning("Unexpected Visible Virama", utn11Queue);
+                        	valid = Status.Invalid;
+                        	mErrorCount++;
+                        	utn11Queue.push(utf16[0]);
+                            continue;
                         }
                         // Is it the next in the sequence within the syllable
                         // structure?
