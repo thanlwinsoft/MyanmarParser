@@ -49,7 +49,7 @@ public class MyanmarValidator implements Validator
 
     enum UTN11
     {
-        Unknown(0), Number(1), Sign(0), Consonant(2), Asat(3), Stacker(4), 
+        Unknown(0), Number(1), Sign(0), Kinzi(-1), Consonant(2), Stacker(3), Asat(4), 
 		MedialYR(5), MedialW(6), MedialH(7), MonAsat(8), EVowel(9), ShanE(10),
 		UVowel(11), LVowel(12), KarenVowel(13), ShanVowel(14), AVowel(15), 
 		Anusvara(16), PwoTone(17), 
@@ -417,9 +417,16 @@ public class MyanmarValidator implements Validator
                                 continue;
                             }
 						}
+						// check for kinzi
+						if (seq == UTN11.Stacker && prevSeq == UTN11.Asat)
+						{
+							seq = UTN11.Kinzi;
+							utn11Queue.push(utf16[0]);
+							continue;
+						}
 						// Now fix the ambiguous cases
-                        // 0x103A needs special handling, since it occurs twice
-                        // in the sequence
+                        // 0x103A needs special handling, since it occurs
+                        // several times in the sequence
                         if (seq == UTN11.Asat && (prevSeq != UTN11.Consonant &&
                         	utn11Queue.peek() != 0x103D && prevSeq != UTN11.MedialYR))
                         {
@@ -457,8 +464,11 @@ public class MyanmarValidator implements Validator
                             	seq = UTN11.VisibleVirama;
                             }
                         }
-                        // Shan W or Mon H medial with asat
-                        if (prevSeq == UTN11.Asat && (utf16[0] == 0x1082 || utf16[0] == 0x103E))
+                        // Shan W or Mon H medial with asat - Asat constraint
+                        // don't check for 1037 here, because several fonts 
+                        // expect it unnormalized
+                        if (prevSeq == UTN11.Asat && (utf16[0] == 0x1082 || 
+                        		utf16[0] == 0x103E /*|| utf16[0] == 0x1037*/))
                         {
                         	// this is invalid, but it can be corrected
                         	if (valid == Status.Valid)
@@ -467,14 +477,14 @@ public class MyanmarValidator implements Validator
                             char asat = utn11Queue.pop();
                             utn11Queue.push(utf16[0]);
                             utn11Queue.push(asat);
-                            logFine("Changed order of asat/shan wa: ", utn11Queue);
+                            logFine("Changed order of asat/shan wa/1037: ", utn11Queue);
                         	seq = UTN11.MonAsat;
                         	continue;
                         }
-                        // Shan E
+                        // Shan E constraint
                         if (utf16[0] == 0x1031 && prevSeq == UTN11.EVowel)
                         	seq = UTN11.ShanE;
-                        // Karen Vowel
+                        // Karen Vowel constraint
                         if (seq == UTN11.KarenVowel && prevSeq == UTN11.LVowel)
                         {
                         	if (utf16[0] == 0x1037)
@@ -494,20 +504,30 @@ public class MyanmarValidator implements Validator
                         		continue;
                         	}
                         }
-                        if (utf16[0] == 0x1037 && (prevSeq == UTN11.Anusvara))
+                        // Mon Asat constraint
+                        if (utf16[0] == 0x1037 && prevSeq == UTN11.MonAsat)
                         {
-                        	seq = UTN11.LowerDot;
+                        	valid = Status.Invalid;
+                    		mErrorCount++;
+                    		utn11Queue.push(utf16[0]);
+                    		logWarning("Invalid MonAsat position with 1037 at: ", utn11Queue);
+                    		continue;
                         }
                         // second 1062
                         if (utf16[0] == 0x1062 && prevSeq == UTN11.KarenVowel)
                         	seq = UTN11.AVowel;
-                        // Anusvara
+                        // Anusvara Constraint
                         if ((utf16[0] == 0x1032 || utf16[0] == 0x1036) &&
-                       		prevSeq.getSequenceId() >= UTN11.UVowel.getSequenceId())
+                        	(prevSeq == UTN11.LVowel || 
+                        	 prevSeq == UTN11.AVowel || // note need a vowel here
+                        	 utn11Queue.peek() == 0x1062 ||
+                        	 utn11Queue.peek() == 0x102D || 
+                        	 utn11Queue.peek() == 0x102E))
+//                       		prevSeq.getSequenceId() >= UTN11.UVowel.getSequenceId())
                         {
                         	seq = UTN11.Anusvara;
                         }
-                        // incorrect uvowel
+                        // incorrect uvowel - Upper Vowel constraint
                         if ((utn11Queue.peek() == 0x1032 || utn11Queue.peek() == 0x1036)
                         	&& seq == UTN11.LVowel)
                         {
@@ -523,14 +543,15 @@ public class MyanmarValidator implements Validator
 						            utn11Queue);
                         	continue;
                         }
-                        // Lower Dot
+                        // Lower Dot constraint what about 1086 here?
                         if (utf16[0] == 0x1037 && (prevSeq == UTN11.LVowel ||
-                        	prevSeq == UTN11.AVowel || prevSeq == UTN11.PwoTone))
+                        	prevSeq == UTN11.AVowel || prevSeq == UTN11.PwoTone
+                        	|| prevSeq == UTN11.Anusvara || prevSeq == UTN11.ShanVowel))
 //                        	prevSeq.getSequenceId() >= UTN11.KarenVowel.getSequenceId())
                         {
                         	seq = UTN11.LowerDot;
                         }
-                        // Mon Ha
+                        // Mon Ha Constraint
                         if (utf16[0] == 0x103E && utn11Queue.peek() == '\u102C')
                         //prevSeq == UTN11.AVowel)
                         {
@@ -543,6 +564,7 @@ public class MyanmarValidator implements Validator
                         	valid = Status.Invalid;
                         	mErrorCount++;
                         }
+                        // Visible Virama constraint
                         if (seq == UTN11.VisibleVirama && (prevSeq != UTN11.AVowel &&
                         	prevSeq != UTN11.PwoTone && prevSeq != UTN11.KarenVowel &&
                         	prevSeq != UTN11.LowerDot && prevSeq != UTN11.MonH))

@@ -235,6 +235,14 @@ public class MyanmarValidatorTest
         validate("ခေါ်","ခေါ်", Validator.Status.Valid);
     }
     /**
+     * Kinzi
+     */
+    @Test
+    public void testValidate23()
+    {
+        validate("အင်္ဂလိပ်","အင်္ဂလိပ်", Validator.Status.Valid);
+    }
+    /**
      * 
      */
     @Test
@@ -339,6 +347,16 @@ public class MyanmarValidatorTest
     {
         check("အောှ်", Validator.Status.Valid);
     }
+    /**
+     * Mon medial h, different order to contractions
+     */
+    @Test
+    public void testValidateMon5()
+    {
+        check("အာဲ", Validator.Status.Valid);
+    }
+    
+
     
     /**
      * Sgaw Karen
@@ -417,5 +435,14 @@ public class MyanmarValidatorTest
     {
     	check("ꩢႅ် ", Validator.Status.Invalid);
     }
+    /**
+     * Khamti
+     */
+    @Test
+    public void testValidateKhamti5()
+    {
+    	check("ꩭၢဲ", Validator.Status.Valid);
+    }
+    
     
 }
