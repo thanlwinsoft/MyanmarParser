@@ -29,6 +29,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -288,6 +290,23 @@ public class MyanmarValidator implements Validator
                 mColumn + " " + dumpQueue(utn11Queue));
 	}
 
+    /**
+     * 
+     * @param input
+     * @param builder may be null
+     * @return validation status
+     */
+    public Status validate(String input, StringBuilder builder)
+    	{
+    		BufferedReader r = new BufferedReader(new StringReader(input));
+    		BufferedWriter w = new BufferedWriter(new StringWriter());
+    		Status s = validate(r, w);
+    		if (builder != null) builder.append(w.toString());
+    		return s;
+    	}
+    /** validate text from specified reader
+     * 
+     */
     public Status validate(BufferedReader r, BufferedWriter w)
     {
         Deque<Character> utn11Queue = new ArrayDeque<Character>(UTN11.Reduplicator
@@ -424,6 +443,16 @@ public class MyanmarValidator implements Validator
 							utn11Queue.push(utf16[0]);
 							continue;
 						}
+						if (prevSeq == UTN11.Kinzi && seq != UTN11.Consonant)
+						{
+							// misplaced Kinzi
+							valid = Status.Invalid;
+							utn11Queue.push(utf16[0]);
+							logWarning("Misplaced Kinzi ", utn11Queue);
+							writeQueue(utn11Queue, w, valid);
+							mErrorCount++;
+							continue;
+						}
 						// Now fix the ambiguous cases
                         // 0x103A needs special handling, since it occurs
                         // several times in the sequence
@@ -433,6 +462,9 @@ public class MyanmarValidator implements Validator
                             if (prevSeq == UTN11.LVowel)
                             {
                                 Character lv = utn11Queue.pop();
+                                UTN11 prevClass = UTN11.fromCode(utn11Queue.peek());
+                                if (prevClass.getSequenceId() < UTN11.MonAsat.getSequenceId())
+                                {
                                 utn11Queue.push(utf16[0]);
                                 utn11Queue.push(lv);
                                 if (valid == Status.Valid)
@@ -440,6 +472,12 @@ public class MyanmarValidator implements Validator
                                 mErrorCount++;
                                 logFine("Corrected U+102F U+103A: ", utn11Queue);
                                 continue;
+                                }
+                                else
+                                {
+                                	utn11Queue.push(lv);
+                                	// more complicated error
+                                }
                             }
                             if (prevSeq == UTN11.Asat)
                             {
@@ -450,8 +488,12 @@ public class MyanmarValidator implements Validator
                                 mErrorCount++;
                                 continue;
                             }
-                            if ((prevSeq == UTN11.MedialH && utn11Queue.peek() == '\u103E') 
-                                || utn11Queue.peek() == '\u1082')
+                            if (prevSeq == UTN11.MonH)
+                            {
+                            	seq = UTN11.VisibleVirama;
+                            }
+                            else if ((utn11Queue.peek() == '\u103E') 
+                                || (utn11Queue.peek() == '\u1082'))
                             {
                             	seq = UTN11.MonAsat;
                             }
@@ -471,15 +513,23 @@ public class MyanmarValidator implements Validator
                         		utf16[0] == 0x103E /*|| utf16[0] == 0x1037*/))
                         {
                         	// this is invalid, but it can be corrected
-                        	if (valid == Status.Valid)
-                                valid = Status.Corrected;
+                          char asat = utn11Queue.pop();
+                          UTN11 previousClass = UTN11.fromCode(utn11Queue.peek());
+                          if (previousClass.getSequenceId() < UTN11.MedialW.getSequenceId())
+                          {
+                          if (valid == Status.Valid)
+                              valid = Status.Corrected;
                         	mErrorCount++;
-                            char asat = utn11Queue.pop();
-                            utn11Queue.push(utf16[0]);
-                            utn11Queue.push(asat);
-                            logFine("Changed order of asat/shan wa/1037: ", utn11Queue);
+                          utn11Queue.push(utf16[0]);
+                          utn11Queue.push(asat);
+                          logFine("Changed order of asat/shan wa/1037: ", utn11Queue);
                         	seq = UTN11.MonAsat;
                         	continue;
+                          }
+                          else
+                          {
+                        	  utn11Queue.push(asat);
+                          }
                         }
                         // Shan E constraint
                         if (utf16[0] == 0x1031 && prevSeq == UTN11.EVowel)
@@ -521,11 +571,30 @@ public class MyanmarValidator implements Validator
                         	(prevSeq == UTN11.LVowel || 
                         	 prevSeq == UTN11.AVowel || // note need a vowel here
                         	 utn11Queue.peek() == 0x1062 ||
-                        	 utn11Queue.peek() == 0x102D || 
+                        	 utn11Queue.peek() == 0x102D ||
                         	 utn11Queue.peek() == 0x102E))
 //                       		prevSeq.getSequenceId() >= UTN11.UVowel.getSequenceId())
                         {
                         	seq = UTN11.Anusvara;
+                        }
+                        // This constraint needs to be added to UTN11
+                        if ((utn11Queue.peek() == 0x1032 || utn11Queue.peek() == 0x1036)
+                        	&& (utf16[0] == 0x1032 || utf16[0] == 0x1036 || utf16[0] == 0x1086))
+                        {
+                        	if (utn11Queue.peek() == utf16[0])
+                        	{
+                        		if (valid == Status.Valid)
+                        			valid = Status.Corrected;
+                        		logFine("Corrected duplicate upper vowel at: ", utn11Queue);
+                        	}
+                        	else
+                        	{
+                        		valid = Status.Invalid;
+                        		utn11Queue.push(utf16[0]);
+                        		logWarning("Invalid at: ", utn11Queue);
+                        	}
+                    		mErrorCount++;
+                    		continue;
                         }
                         // incorrect uvowel - Upper Vowel constraint
                         if ((utn11Queue.peek() == 0x1032 || utn11Queue.peek() == 0x1036)
@@ -533,6 +602,9 @@ public class MyanmarValidator implements Validator
                         {
                         	// correct by swapping
                         	char c = utn11Queue.pop();
+                        	UTN11 previousClass = UTN11.fromCode(utn11Queue.peek());
+                        	if (previousClass.getSequenceId() < seq.getSequenceId())
+                        	{
                         	utn11Queue.push(utf16[0]);
                         	utn11Queue.push(c);
                         	seq = UTN11.Anusvara;
@@ -542,6 +614,13 @@ public class MyanmarValidator implements Validator
 						    logFine("Corrected anusvara lower vowel at: ", 
 						            utn11Queue);
                         	continue;
+                        	}
+                        	else
+                        	{
+                        		// error more complicated
+                        		utn11Queue.push(c);
+                        	}
+                        	
                         }
                         // Lower Dot constraint what about 1086 here?
                         if (utf16[0] == 0x1037 && (prevSeq == UTN11.LVowel ||
@@ -593,7 +672,30 @@ public class MyanmarValidator implements Validator
                         {
 							if (prevSeq == UTN11.Stacker)
 							{
-	                            utn11Queue.push(utf16[0]);
+								if (utn11Queue.size() > 3)
+								{
+									char virama = utn11Queue.pop();
+									// checking the length should prevent this matching with a
+									// pali kinzi plus stack
+									if (utn11Queue.peek() == utf16[0] && utn11Queue.size() == 3)
+									{
+										// the stack is identical to the previous one, this is
+										// almost certainly a double typing
+										if (valid == Status.Valid)
+											valid = Status.Corrected;
+									}
+									else
+									{
+										utn11Queue.push(virama);
+										utn11Queue.push(utf16[0]);
+										logWarning("Syllable has multiple Pali stacks. Is this really correct? ",
+											utn11Queue);
+									}
+								}
+								else
+								{
+									utn11Queue.push(utf16[0]);	
+								}
 							}
 							else
 							{
@@ -681,6 +783,7 @@ public class MyanmarValidator implements Validator
 						    else // badly wrong, give up trying to correct
 						    {
 						        utn11Queue.push(eVowel);
+						        // error will be logged below
 						    }
 						}
 
@@ -718,6 +821,9 @@ public class MyanmarValidator implements Validator
                         	 || seq == UTN11.MedialH))
                         {
                         	char lv = utn11Queue.pop();
+                        	UTN11 previousClass = UTN11.fromCode(utn11Queue.peek());
+                        	if (previousClass.getSequenceId() < seq.getSequenceId())
+                        	{
                             utn11Queue.push(utf16[0]);
                             utn11Queue.push(lv);
                             if (valid == Status.Valid)
@@ -727,6 +833,12 @@ public class MyanmarValidator implements Validator
                                     utn11Queue);
                             seq = UTN11.fromCode(utn11Queue.peek());
                         	continue;
+                        	}
+                        	else
+                        	{
+                        		// error is more complicated, pushback
+                        		utn11Queue.push(lv);
+                        	}
                         }
                         if (prevSeq == seq && utf16[0] == utn11Queue.peek())
                         {
@@ -780,14 +892,27 @@ public class MyanmarValidator implements Validator
         if (utn11Queue.size() > 0 && utn11Queue.peek() == 0x1039)
         {
             // stray 1039, should probably be 103A
-            utn11Queue.pop();
-            utn11Queue.push(Character.valueOf((char) 0x103A));
-            sLogger.fine("Corrected 0x1039 at: Ln " + mLine + " Col "
-                    + (mColumn - utn11Queue.size()) + "," + mColumn + " "
-                    + dumpQueue(utn11Queue));
-            if (status == Status.Valid)
-                status = Status.Corrected;
-            mErrorCount++;
+            char virama = utn11Queue.pop();
+            UTN11 beforeViramaClass = UTN11.fromCode(utn11Queue.peek());
+            if (beforeViramaClass == UTN11.Consonant)
+            {
+	            utn11Queue.push(Character.valueOf((char) 0x103A));
+	            sLogger.fine("Corrected 0x1039 at: Ln " + mLine + " Col "
+	                    + (mColumn - utn11Queue.size()) + "," + mColumn + " "
+	                    + dumpQueue(utn11Queue));
+	            if (status == Status.Valid)
+	                status = Status.Corrected;
+	            mErrorCount++;
+            }
+            else
+            {
+            	sLogger.warning("Unexpected virama at: Ln " + mLine + " Col " +
+            			(mColumn - utn11Queue.size()) + "," + mColumn + " "
+	                    + dumpQueue(utn11Queue));
+            	utn11Queue.push(virama);
+            	status = Status.Invalid;
+            	mErrorCount++;
+            }
         }
         // correct ၄င်း
         if (utn11Queue.size() == 4 && utn11Queue.peekLast() == '\u1044' && 

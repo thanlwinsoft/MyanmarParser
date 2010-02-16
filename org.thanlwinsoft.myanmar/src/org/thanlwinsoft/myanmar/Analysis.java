@@ -33,6 +33,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
+import org.thanlwinsoft.myanmar.Validator.Status;
+
 
 /**
  * Analysis of text to extract and count the occurrences of each Myanmar syllable.
@@ -202,8 +204,10 @@ public class Analysis
     public void analyse(BufferedReader br) throws IOException
     {
         String line = null;
+        int lineNum = 0;
         while ((line = br.readLine()) != null)
         {
+        	++lineNum;
         	if (line.length() == 0) continue;
             BufferedReader lineReader = new BufferedReader(new StringReader(line));
             StringWriter validateWriter = new StringWriter();
@@ -241,7 +245,19 @@ public class Analysis
 	                    syllableText = validated.substring(cp.getStart(), cp.getEnd());
 	                }
 	                if (mParser.isMyanmarCharacter(syllableText.charAt(0)))
+	                				{
 	                    syllables.addLast(syllableText);
+	                    if (mValidator instanceof MyanmarValidator)
+	                    	{
+	                    ((MyanmarValidator)mValidator).setRef("Line " +
+	                    		Integer.toString(lineNum));
+	                    	}
+	                    Status sylStatus = mValidator.validate(syllableText, null);
+	                    if (sylStatus != Status.Valid)
+	                    {
+	                    	sLogger.warning("Syllable appears invalid: " + syllableText + " on line\n" + line);
+	                    }
+	                				}
 	                processSyllables(syllables);
                 }
             }

@@ -46,6 +46,13 @@ public interface Validator
          */
         Invalid
     }
+    /**
+     * Perform validation on a String
+     * @param input
+     * @param output
+     * @return status
+     */
+    public Status validate(String input, StringBuilder output);
 	/**
 	 * Perform validation
 	 * @param r input reader

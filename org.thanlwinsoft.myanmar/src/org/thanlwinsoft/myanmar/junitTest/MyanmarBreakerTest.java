@@ -101,5 +101,14 @@ public class MyanmarBreakerTest
 	{
 		breakTest("","ပ⁠ရို⁠တိန်း","ပ⁠ရို⁠တိန်း\n");
 	}
+	
+	/**
+	 * PaO test
+	 */
+	@Test
+	public void testBreak5()
+	{
+		breakTest("","တꩻညာꩻ","တꩻ|ညာꩻ\n");
+	}
 }
 

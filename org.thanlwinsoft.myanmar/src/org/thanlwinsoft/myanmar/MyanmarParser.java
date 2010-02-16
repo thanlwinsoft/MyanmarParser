@@ -1,12 +1,23 @@
 /*
  * Title: MyanmarParser
  * Description: Syllable based Myanmar Parser
- * Copyright:   Copyright (c) 2005 http://www.thanlwinsoft.org
+ * Copyright:   Copyright (c) 2005,2009 http://www.thanlwinsoft.org
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
+ * This file is free software; you can redistribute it and/or
+ * modify it under the terms of either the Apache License, Version 2.0 or
+ * the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version.
+ *
+ * You may obtain a copy of the Apache License, Version 2.0 at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,7 +29,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA  02111-1307  USA
  */
-package org.thanlwinsoft.myanmar;
+ package org.thanlwinsoft.myanmar;
 
 import java.util.ArrayList;
 
@@ -625,9 +636,11 @@ public class MyanmarParser
   {
 	  if (mmChar < 0x1000 || mmChar > 0x109F)
 	  {
-		  if (mmChar >= 0xAA60 && mmChar < 0xAA76)
+		  if (mmChar >= 0xAA60 && mmChar < 0xAA7C)
 		  {
 			  if (mmChar == 0xAA70)
+				  return MySyllablePart.MY_SYLLABLE_TONE;
+			  else if (mmChar == 0xAA7B)
 				  return MySyllablePart.MY_SYLLABLE_TONE;
 			  return MySyllablePart.MY_SYLLABLE_CONSONANT;
 		  }

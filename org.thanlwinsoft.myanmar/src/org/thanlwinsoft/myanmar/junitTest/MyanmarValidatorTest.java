@@ -246,6 +246,38 @@ public class MyanmarValidatorTest
      * 
      */
     @Test
+    public void testValidate24()
+    {
+        validate("ခြသေ့င်္","ခြသေ့င်္", Validator.Status.Invalid);
+    }
+    /**
+     * 
+     */
+    @Test
+    public void testValidate25()
+    {
+        validate("သချာင်္","သချာင်္", Validator.Status.Invalid);
+    }
+    /**
+     * 
+     */
+    @Test
+    public void testValidate26()
+    {
+        validate("ရှိှိန်","ရှိှိန်", Validator.Status.Invalid);
+    }
+    /**
+     * 
+     */
+    @Test
+    public void testValidate27()
+    {
+    	correct("ဗျဉ္ဇ္ဇ","ဗျဉ္ဇ");
+    }
+    /**
+     * 
+     */
+    @Test
     public void testValidateShan1()
     {
         validate("ဢွႆႇ", "ဢွႆႇ", Validator.Status.Valid);
@@ -401,6 +433,14 @@ public class MyanmarValidatorTest
         check("ၥ့ၭ", Validator.Status.Valid);
     }
     
+    /**
+     * Pa-O
+     */
+    @Test
+    public void testValidatePaO()
+    {
+    	check("သချာင်္ႏ", Validator.Status.Invalid);
+    }
     
     /**
      * Khamti
@@ -444,5 +484,44 @@ public class MyanmarValidatorTest
     	check("ꩭၢဲ", Validator.Status.Valid);
     }
     
-    
+    /**
+     * Invalid sequence
+     */
+    @Test
+    public void testValidateInvalid1()
+    {
+    	correct("ကံံ", "ကံ");
+    }
+    /**
+     * Invalid sequence
+     */
+    @Test
+    public void testValidateInvalid2()
+    {
+    	check("က\u1036\u1086", Validator.Status.Invalid);
+    }
+    /**
+     * Invalid sequence
+     */
+    @Test
+    public void testValidateInvalid3()
+    {
+    	check("က\u1086\u1036", Validator.Status.Invalid);
+    }
+    /**
+     * Pali
+     */
+    @Test
+    public void testPali1()
+    {
+    	check("\u101B\u103A\u1039\u1010\u1039\u1010", Validator.Status.Valid);
+    }
+    /**
+     * Pali
+     */
+    @Test
+    public void testPali2()
+    {
+    	check("\u1010\u1039\u101E\u1039\u1014", Validator.Status.Valid);
+    }
 }

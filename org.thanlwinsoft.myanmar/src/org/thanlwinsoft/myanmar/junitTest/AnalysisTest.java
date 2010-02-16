@@ -94,4 +94,17 @@ public class AnalysisTest
 		Assert.assertEquals(1,results.size());
 		Assert.assertEquals(1, results.get(new AnalysisSyllable("ကျ", new ArrayDeque<String>())).intValue());
 	}
+
+	/**
+	 * test for Pa-O
+	 */
+	@Test
+	public void test4()
+	{
+		Map<AnalysisSyllable, Integer> results = runTest("တꩻညာꩻအိုႏအပီ", 0);
+		Assert.assertEquals(1, results.get(new AnalysisSyllable("တꩻ", new ArrayDeque<String>())).intValue());
+		Assert.assertEquals(1, results.get(new AnalysisSyllable("ညာꩻ", new ArrayDeque<String>())).intValue());
+		Assert.assertEquals(1, results.get(new AnalysisSyllable("အိုႏ", new ArrayDeque<String>())).intValue());
+		Assert.assertEquals(1, results.get(new AnalysisSyllable("အပီ", new ArrayDeque<String>())).intValue());
+	}
 }
