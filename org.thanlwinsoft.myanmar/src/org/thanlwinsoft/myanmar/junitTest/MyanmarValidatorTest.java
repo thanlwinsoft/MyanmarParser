@@ -275,6 +275,22 @@ public class MyanmarValidatorTest
     	correct("ဗျဉ္ဇ္ဇ","ဗျဉ္ဇ");
     }
     /**
+     * test for normalization
+     */
+    @Test
+    public void testValidate28()
+    {
+    	correct("တော့်","တော့်");
+    }
+    /**
+     * test for normalization
+     */
+    @Test
+    public void testValidate29()
+    {
+    	correct("ခေါ့်","ခေါ့်");
+    }
+    /**
      * 
      */
     @Test
@@ -397,7 +413,8 @@ public class MyanmarValidatorTest
     public void testValidateSgaw1()
     {
         //correct("လဲၣ့်", "လဲ့ၣ်");
-    	check("လဲၣ့်", Validator.Status.Invalid);
+        // This is wrong for Karen, but not by UTN11. The difference is visible.
+    	//check("လဲၣ့်", Validator.Status.Invalid);
     }
     /**
      * Sgaw Karen

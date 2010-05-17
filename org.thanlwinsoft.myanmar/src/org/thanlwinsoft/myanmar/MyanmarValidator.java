@@ -497,7 +497,7 @@ public class MyanmarValidator implements Validator
                             {
                             	seq = UTN11.MonAsat;
                             }
-                            else if (prevSeq == UTN11.KarenVowel)
+                            else if (prevSeq == UTN11.KarenVowel || prevSeq == UTN11.LowerDot)
                             {
                             	seq = UTN11.VisibleVirama;
                             }
@@ -507,29 +507,49 @@ public class MyanmarValidator implements Validator
                             }
                         }
                         // Shan W or Mon H medial with asat - Asat constraint
-                        // don't check for 1037 here, because several fonts 
-                        // expect it unnormalized
-                        if (prevSeq == UTN11.Asat && (utf16[0] == 0x1082 || 
-                        		utf16[0] == 0x103E /*|| utf16[0] == 0x1037*/))
+                        if (prevSeq == UTN11.Asat && (utf16[0] == 0x1082 ||
+                        		utf16[0] == 0x103E))
                         {
                         	// this is invalid, but it can be corrected
                           char asat = utn11Queue.pop();
                           UTN11 previousClass = UTN11.fromCode(utn11Queue.peek());
                           if (previousClass.getSequenceId() < UTN11.MedialW.getSequenceId())
                           {
-                          if (valid == Status.Valid)
-                              valid = Status.Corrected;
-                        	mErrorCount++;
-                          utn11Queue.push(utf16[0]);
-                          utn11Queue.push(asat);
-                          logFine("Changed order of asat/shan wa/1037: ", utn11Queue);
-                        	seq = UTN11.MonAsat;
-                        	continue;
+                              if (valid == Status.Valid)
+                                  valid = Status.Corrected;
+                            	mErrorCount++;
+                              utn11Queue.push(utf16[0]);
+                              utn11Queue.push(asat);
+                              logFine("Changed order of asat/shan wa/1037: ", utn11Queue);
+                            	seq = UTN11.MonAsat;
+                            	continue;
                           }
                           else
                           {
                         	  utn11Queue.push(asat);
                           }
+                        }
+                        // check for 1037 here, but older fonts 
+                        // expect it unnormalized
+                        if (prevSeq == UTN11.VisibleVirama && utf16[0] == 0x1037)
+                        {
+                            char asat = utn11Queue.pop();
+                            UTN11 previousClass = UTN11.fromCode(utn11Queue.peek());
+                            if (previousClass.getSequenceId() == UTN11.AVowel.getSequenceId())
+                            {
+                              if (valid == Status.Valid)
+                                  valid = Status.Corrected;
+                            	mErrorCount++;
+                              utn11Queue.push(utf16[0]);
+                              utn11Queue.push(asat);
+                              logFine("Changed order of visible virama 1037: ", utn11Queue);
+                            	seq = UTN11.VisibleVirama;
+                            	continue;
+                            }
+                            else
+                            {
+                                utn11Queue.push(asat);
+                            }
                         }
                         // Shan E constraint
                         if (utf16[0] == 0x1031 && prevSeq == UTN11.EVowel)

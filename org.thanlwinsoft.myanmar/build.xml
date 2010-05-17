@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="MyanmarParser" default="build">
 	<property name="installBase" value="/usr/local" />
+	<property name="lib.dir" value="/usr/share/java"/>
+
 	<target name="init">
 		<property name="version" value="1.0"/>
 
 		<path id="junit.path">
-			<fileset dir="/opt/eclipse/plugins/org.junit4_4.3.1">
-				<include name="junit.jar" />
+			<fileset dir="${lib.dir}">
+				<include name="junit4.jar" />
 			</fileset>
 		</path>
 	</target>
@@ -14,7 +16,7 @@
 		<mkdir dir="classes" />
 		<javac srcdir="src"
 		  destdir="classes"
-			   includes="org.thanlwinsoft.myanmar.junitTest/*.java"
+			   includes="org/thanlwinsoft/myanmar/junitTest/*.java"
 		         classpathref="junit.path"
 		         debug="on" />
 	</target>
@@ -57,4 +59,26 @@
 			<arg value="${installBase}/bin/myanmar-breaker"/>
 		</exec>
 	</target>
+	<target name="test" depends="init, build, build-junit">
+
+      <junit printsummary="yes" haltonfailure="yes" haltonerror="yes">
+
+        <classpath location="classes"/>
+        <classpath location="${lib.dir}/junit4.jar"/>
+
+        <formatter type="plain" />
+
+        <batchtest>
+          <fileset dir="classes" >
+            <include name="org/thanlwinsoft/myanmar/junitTest/AnalysisTest.class"/>
+            <include name="org/thanlwinsoft/myanmar/junitTest/MyanmarBreakerTest.class"/>
+            <include name="org/thanlwinsoft/myanmar/junitTest/MyanmarValidatorTest.class"/>
+            <!-- TestDriver includes the LineBreakTest-->
+            <include name="org/thanlwinsoft/myanmar/junitTest/TestDriver.class"/>
+          </fileset>
+        </batchtest>
+
+      </junit>
+
+    </target>
 </project>
