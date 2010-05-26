@@ -320,7 +320,7 @@ public class MyanmarParser
     		 { 3, 5, 1, 1, 1, 1, 1, 2, 4 },//C
     		 { 3, 5, 1, 1, 1, 0, 1, 2, 4 },//M
     		 { 3, 5, 0, 1, 1, 0, 1, 2, 4 },//V
-    		 { 3, 2, 0, 1, 1, 0, 0, 2, 4 },//T
+    		 { 3, 2, 0, 1, 1, 0, 1, 2, 4 },//T
     		 { 3, 1, 0, 0, 0, 0, 0, 0, 0 },//1039
     		 { 3, 2, 1, 1, 1, 1, 0, 2, 4 },//103A
     		 { 3, 2, 1, 1, 1, 0, 0, 1, 4 },//N
@@ -599,7 +599,8 @@ public class MyanmarParser
 
     if (text[1] == 0x002d) return MyPairStatus.MY_PAIR_NO_BREAK;
     if (text[1] == 0x103F) return MyPairStatus.MY_PAIR_NO_BREAK;
-    
+    if (text[2] == 0x1037 && text[3] == 0x103A)
+    	return MyPairStatus.MY_PAIR_NO_BREAK;
     if (text[2] == 0x1039)
     {
       return MyPairStatus.MY_PAIR_NO_BREAK;

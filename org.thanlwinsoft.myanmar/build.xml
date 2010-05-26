@@ -59,9 +59,9 @@
 			<arg value="${installBase}/bin/myanmar-breaker"/>
 		</exec>
 	</target>
-	<target name="test" depends="init, build, build-junit">
-
-      <junit printsummary="yes" haltonfailure="yes" haltonerror="yes">
+	<target name="test" depends="init, build, build-junit" description="Run test cases">
+    <!-- use printsummary="withOutAndErr" for more info -->
+      <junit printsummary="on" haltonfailure="yes" haltonerror="yes">
 
         <classpath location="classes"/>
         <classpath location="${lib.dir}/junit4.jar"/>
