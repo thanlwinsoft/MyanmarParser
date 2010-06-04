@@ -291,6 +291,14 @@ public class MyanmarValidatorTest
     	correct("ခေါ့်","ခေါ့်");
     }
     /**
+    * test for normalization
+    */
+   @Test
+   public void testValidate30()
+   {
+   	correct("နှင့်","နှင့်");
+   }
+    /**
      * 
      */
     @Test

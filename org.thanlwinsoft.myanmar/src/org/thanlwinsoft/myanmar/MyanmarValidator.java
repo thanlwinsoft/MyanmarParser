@@ -531,11 +531,12 @@ public class MyanmarValidator implements Validator
                         }
                         // check for 1037 here, but older fonts 
                         // expect it unnormalized
-                        if (prevSeq == UTN11.VisibleVirama && utf16[0] == 0x1037)
+                        if ((prevSeq == UTN11.VisibleVirama || prevSeq == UTN11.Asat)
+                        		&& utf16[0] == 0x1037)
                         {
                             char asat = utn11Queue.pop();
                             UTN11 previousClass = UTN11.fromCode(utn11Queue.peek());
-                            if (previousClass.getSequenceId() == UTN11.AVowel.getSequenceId())
+                            if (previousClass.getSequenceId() <= UTN11.AVowel.getSequenceId())
                             {
                               if (valid == Status.Valid)
                                   valid = Status.Corrected;
