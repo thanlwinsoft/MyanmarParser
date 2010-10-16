@@ -388,14 +388,23 @@ public class MyanmarValidator implements Validator
 							}
 							// This isn't 100% reliable, there could be 
 							// legitimate cases
-							if (utn11Queue.peek() == '\u1040')
+							if (utn11Queue.peek() == '\u1040' && seq != UTN11.Sign)
 							{
-								logFine("Corrected wa at: ", utn11Queue);
-								utn11Queue.pop();// remove 0 replace with wa
-								utn11Queue.push('\u101D');
-								if (valid == Status.Valid)
-	                                valid = Status.Corrected;
-								mErrorCount++;
+								char zero = utn11Queue.pop();// remove 0 replace with wa
+								if (utn11Queue.size() > 0 &&
+									(utn11Queue.peek() >= '\u1040') &&
+									(utn11Queue.peek() <= '\u1049'))
+								{
+									utn11Queue.push(zero); // 0 was correct
+								}
+								else
+								{
+									logFine("Corrected wa at: ", utn11Queue);
+									utn11Queue.push('\u101D');
+									if (valid == Status.Valid)
+		                                valid = Status.Corrected;
+									mErrorCount++;									
+								}
 							}
 							if (utn11Queue.peek() == '\u1044' && utf16[0] == '\u1004')
 							{

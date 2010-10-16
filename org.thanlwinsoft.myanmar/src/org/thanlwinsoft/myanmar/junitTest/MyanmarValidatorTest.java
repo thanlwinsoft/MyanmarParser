@@ -298,6 +298,22 @@ public class MyanmarValidatorTest
    {
    	correct("နှင့်","နှင့်");
    }
+   /**
+    * test for zero in numbers
+    */
+   @Test
+   public void testValidate31()
+   {
+   	validate("၁၀","၁၀",Validator.Status.Valid);
+   }
+   /**
+    * test for zero with punctuation
+    */
+   @Test
+   public void testValidate32()
+   {
+   	validate("၀။","၀။",Validator.Status.Valid);
+   }
     /**
      * 
      */
